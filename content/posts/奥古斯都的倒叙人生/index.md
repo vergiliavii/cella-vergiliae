@@ -6,7 +6,7 @@ status: draft
 created_at: 2026-10-07T08:11:59Z
 description: 人们总在生时追寻回忆。而死后，回忆自会重演。
 categories:
-  - 小说
+  - 单篇小说
 tags:
   - 屋大维
   - 屋圈
