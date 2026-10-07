@@ -5,7 +5,7 @@ slug: test
 status: draft
 created_at: 2026-10-07T07:19:57Z
 categories:
-  - 未分类
+  - 史料
 description: 克圣自传节选。
 tags:
   - 克鲁伊夫
