@@ -6,7 +6,7 @@ status: draft
 created_at: 2026-10-08T07:40:28Z
 categories:
   - 随笔
-description: 他们说，总是要有首歌的。
+description: 他们说，总归要有首歌。
 ---
 
 所有的那些伟大人物
