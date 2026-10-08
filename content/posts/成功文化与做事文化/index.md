@@ -2,12 +2,13 @@
 id: 01M4D7QRB5BSQ4JEV5E884KW2A
 title: 成功文化与做事文化
 slug: 成功文化与做事文化
-status: draft
+status: published
 created_at: 2026-10-08T07:48:08Z
 description: 一线之隔。
 categories:
   - 随笔
   - 散文
+published_at: 2026-10-08T16:25:57.821Z
 ---
 
 \[原作2026.8.28\]
