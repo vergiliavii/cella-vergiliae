@@ -1,14 +1,14 @@
 ---
 id: 01M4D79PXZX3JWVWGSMBTJPF2F
 title: "渺小时代之歌"
-slug: untitled-2
+slug: 渺小时代之歌
 status: published
 created_at: 2026-10-08T07:40:28Z
 categories:
   - 随笔
   - 诗歌
 description: 他们说，总归要有首歌。
-published_at: 2026-10-08T16:22:01.031Z
+published_at: 2026-10-08T16:22:01Z
 ---
 
 [原作2026.9.6]
