@@ -1,7 +1,7 @@
 ---
 id: 01M4DZA40WZZDPNMGSRA6Q7M2V
 title: 关于我所遇的障碍
-slug: 关于我之于学术的最大障碍
+slug: 关于我所遇的障碍
 status: published
 created_at: 2026-10-08T14:40:07Z
 description: 此地长梦者，声名镜中书。
