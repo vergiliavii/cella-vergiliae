@@ -7,6 +7,7 @@ created_at: 2026-10-08T07:32:51Z
 description: 将整个世界融于自心中的人是伟大的。
 categories:
   - 随笔
+  - 散文
 tags:
   - 阿尔图罗
 ---
