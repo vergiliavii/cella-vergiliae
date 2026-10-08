@@ -1,0 +1,36 @@
+{{- /* One header link, in the header itself or in the menu of a narrow
+       screen. Called with (dict "label" L "href" H "icon" I "variant"
+       "header" or "drawer" "here" .Page.RelPermalink), href resolved
+       already. An icon left out, or on Automatic, is guessed from the
+       address. */ -}}
+{{- $href := .href -}}
+{{- $here := .here -}}
+{{- $homeURL := url.For "home" -}}
+{{- $external := not (str.HasPrefix "/" $href) -}}
+{{- $active := false -}}
+{{- if $external }}
+{{- else if eq $href $homeURL }}{{ $active = eq $here $homeURL }}
+{{- else }}{{ $active = str.HasPrefix $href $here }}{{ end -}}
+{{- if eq .variant "drawer" }}
+  {{- $guess := dict
+    "posts" "file-text" "projects" "folder" "douban" "book-open" "reading" "book-open"
+    "watching" "film" "archives" "archive" "moments" "sparkles" "about" "user"
+    "links" "external-link" "resume" "id-card" "tags" "hash" "categories" "folder"
+    "feed" "rss" "search" "search" "travel" "plane" }}
+  {{- $icon := .icon }}
+  {{- if or (not $icon) (eq $icon "auto") }}
+    {{- $icon = "chevron-right" }}
+    {{- if eq $href $homeURL }}{{ $icon = "rocket" }}{{ end }}
+    {{- range $key, $name := $guess }}{{ if str.Contains (printf "/%s" $key) $href }}{{ $icon = $name }}{{ end }}{{ end }}
+  {{- end }}
+      <a href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener"{{ end }}{{ if $active }} aria-current="page"{{ end }}
+         class="group flex items-center gap-3 rounded-md px-2.5 py-2.5 text-[15px] transition-colors {{ if $active }}bg-brand/10 font-medium text-brand{{ else }}text-foreground/85 hover:bg-accent hover:text-foreground{{ end }}">
+        <span class="transition-colors {{ if $active }}text-brand{{ else }}text-muted-foreground group-hover:text-foreground{{ end }}">
+          {{- partial "icon.html" (dict "name" $icon "class" "size-4") -}}
+        </span>
+        <span>{{ .label }}</span>
+      </a>
+{{- else }}
+      <a href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener"{{ end }}{{ if $active }} aria-current="page"{{ end }}
+         class="nav-link{{ if $active }} is-active{{ end }}">{{ .label }}</a>
+{{- end -}}

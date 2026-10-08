@@ -1,0 +1,91 @@
+{{- /* One moment: the time, where and on what, the text, a grid of pictures
+       that open in the picture viewer, and a song or a video.
+       dict: moment, when (its day and time, from the moments layout),
+       index, site */ -}}
+{{- $m := .moment -}}
+{{- $when := .when -}}
+{{- $id := printf "moment-%d" .index -}}
+{{- $images := $m.images -}}
+{{- $count := 0 -}}
+{{- with $images }}{{ $count = len . }}{{ end -}}
+{{- $grid := "grid grid-cols-3" -}}
+{{- if eq $count 1 }}{{ $grid = "grid grid-cols-1 max-w-md" }}
+{{- else if or (eq $count 2) (eq $count 4) }}{{ $grid = "grid grid-cols-2 max-w-md" }}{{ end -}}
+{{- $deviceIcon := "monitor" -}}
+{{- with $m.device -}}
+  {{- $d := str.Lower (printf "%v" .) -}}
+  {{- if or (str.Contains "iphone" $d) (str.Contains "android" $d) (str.Contains "phone" $d) (str.Contains "pixel" $d) (str.Contains "huawei" $d) (str.Contains "xiaomi" $d) (str.Contains "oneplus" $d) }}{{ $deviceIcon = "smartphone" }}
+  {{- else if str.Contains "ipad" $d }}{{ $deviceIcon = "tablet" }}
+  {{- else if or (str.Contains "macbook" $d) (str.Contains "laptop" $d) (str.Contains "thinkpad" $d) (str.Contains "framework" $d) }}{{ $deviceIcon = "laptop" }}{{ end -}}
+{{- end -}}
+<article id="{{ $id }}" class="card card-hover px-4 py-3">
+  <header class="mb-1.5 flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+    {{- with $when.time }}
+    <a href="#{{ $id }}" class="tabular-nums transition-colors hover:text-brand" title="{{ $when.day }} {{ . }}">
+      <time{{ with $when.iso }} datetime="{{ . }}"{{ end }}>{{ . }}</time>
+    </a>
+    {{- end }}
+    {{- with $m.location }}
+    <span class="opacity-40">·</span>
+    <span class="inline-flex items-center gap-1">{{ partial "icon.html" (dict "name" "map-pin" "class" "size-3") }}<span>{{ . }}</span></span>
+    {{- end }}
+    {{- with $m.mood }}
+    <span class="opacity-40">·</span>
+    <span>{{ . }}</span>
+    {{- end }}
+    {{- with $m.device }}
+    <span class="ml-auto inline-flex items-center gap-1 opacity-70" title="{{ . }}">{{ partial "icon.html" (dict "name" $deviceIcon "class" "size-3") }}<span>{{ . }}</span></span>
+    {{- end }}
+  </header>
+
+  {{- with $m.text }}
+  <div class="prose-almanac prose-sm max-w-none whitespace-pre-line">{{ . }}</div>
+  {{- end }}
+
+  {{- if gt $count 0 }}
+  <div class="{{ $grid }} mt-3 gap-1.5" data-gallery>
+    {{- range $images }}
+      {{- $src := printf "%v" . }}
+      {{- if not (or (str.HasPrefix "http://" $src) (str.HasPrefix "https://" $src)) }}{{ $src = url.Rel $src }}{{ end }}
+    <a href="{{ $src }}" class="block aspect-square w-full cursor-zoom-in overflow-hidden rounded-md bg-muted ring-1 ring-border transition hover:ring-foreground/30">
+      <img src="{{ $src }}" alt="" loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-300 hover:scale-[1.02]">
+    </a>
+    {{- end }}
+  </div>
+  {{- end }}
+
+  {{- with $m.music }}
+    {{- $platform := printf "%v" (.platform | default "163") }}
+    {{- if eq $platform "spotify" }}
+  <div class="mt-3 overflow-hidden rounded-md border border-border">
+    <iframe class="block w-full" src="https://open.spotify.com/embed/track/{{ .id }}" height="152" style="border:0; border-radius:12px"
+            allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Spotify"></iframe>
+  </div>
+    {{- else }}
+      {{- $type := printf "%v" (.type | default "song") }}
+      {{- $t := "2" }}
+      {{- if eq $type "playlist" }}{{ $t = "0" }}{{ else if eq $type "album" }}{{ $t = "3" }}{{ end }}
+  <div class="mt-3 overflow-hidden rounded-md border border-border bg-card">
+    <iframe class="block w-full" height="86" style="border:0"
+            src="https://music.163.com/outchain/player?type={{ $t }}&id={{ .id }}&auto=0&height=66"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="NetEase Cloud Music"></iframe>
+  </div>
+    {{- end }}
+  {{- end }}
+
+  {{- with $m.video }}
+    {{- $platform := printf "%v" (.platform | default "bilibili") }}
+  <div class="mt-3 overflow-hidden rounded-md border border-border bg-black">
+    <div class="relative w-full aspect-video">
+      {{- if eq $platform "youtube" }}
+      <iframe class="absolute inset-0 size-full" style="border:0" src="https://www.youtube-nocookie.com/embed/{{ .id }}?rel=0"
+              allow="clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin" title="YouTube"></iframe>
+      {{- else }}
+      <iframe class="absolute inset-0 size-full" style="border:0" src="https://player.bilibili.com/player.html?bvid={{ .id }}&page=1&autoplay=0&danmaku=0&high_quality=1"
+              scrolling="no" allowfullscreen loading="lazy" referrerpolicy="no-referrer" title="Bilibili"></iframe>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+</article>

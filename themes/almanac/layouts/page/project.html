@@ -1,0 +1,78 @@
+{{ define "main" }}
+{{- /* One project's own page: its status and date, name and summary, tech,
+       GitHub numbers that almanac.js fills in when github_user is set,
+       links to its repository, site and demo, then the page's text. A
+       projects page can lead to it with an entry's link.
+
+       status: active          # maintained, experimental, archived, or any word
+       summary: What it is, in a line.
+       tech: [Go, React]
+       repo: https://github.com/you/project
+       homepage: https://project.dev
+       demo: https://demo.project.dev */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $p := .Page.Params -}}
+{{- $status := printf "%v" ($p.status | default "active") -}}
+{{- $label := partial "t.html" (dict "k" "status_active" "lang" $lang) -}}
+{{- $tone := "border-success/25 bg-success/10 text-success" -}}
+{{- if eq $status "maintained" }}{{ $label = partial "t.html" (dict "k" "status_maintained" "lang" $lang) }}{{ $tone = "border-brand/20 bg-brand/10 text-brand" }}
+{{- else if eq $status "archived" }}{{ $label = partial "t.html" (dict "k" "status_archived" "lang" $lang) }}{{ $tone = "border-transparent bg-muted text-muted-foreground" }}
+{{- else if eq $status "experimental" }}{{ $label = partial "t.html" (dict "k" "status_experimental" "lang" $lang) }}{{ $tone = "border-warning/30 bg-warning/10 text-warning" }}
+{{- else if ne $status "active" }}{{ $label = $status }}{{ $tone = "border-transparent bg-muted text-muted-foreground" }}{{ end -}}
+{{- $slug := partial "repo-slug.html" $p.repo -}}
+{{ partial "toc.html" . }}
+<article class="mx-auto max-w-3xl"{{ with $s.github_user }} data-github-user="{{ . }}"{{ end }}>
+  <header class="mb-10 space-y-4 border-b border-border pb-8"{{ with $slug }} data-repo="{{ . }}"{{ end }}>
+    <div class="flex flex-wrap items-center gap-2.5">
+      <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium leading-5 {{ $tone }}">{{ $label }}</span>
+      {{- if not (time.IsZero .Page.PublishDate) }}
+      <span class="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+        {{- partial "icon.html" (dict "name" "calendar" "class" "size-3") }}
+        <time datetime="{{ time.Format "2006-01-02" .Page.PublishDate }}" class="tabular-nums">{{ time.Format "2006-01-02" .Page.PublishDate }}</time>
+      </span>
+      {{- end }}
+    </div>
+    <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{{ .Page.Title }}</h1>
+    {{- with or $p.summary $p.description }}
+    <p class="font-serif text-base leading-relaxed text-muted-foreground md:text-lg">{{ . }}</p>
+    {{- end }}
+    {{- with $p.tech }}
+    <div class="flex flex-wrap gap-1.5">
+      {{- range . }}<span class="chip">{{ . }}</span>{{ end -}}
+    </div>
+    {{- end }}
+    {{- if $slug }}
+    {{ partial "github-row.html" (dict "site" .Site "class" "gap-4" "icon" "size-3.5") }}
+    {{- end }}
+    {{- if or $p.repo $p.homepage $p.demo }}
+    <div class="flex flex-wrap gap-2 pt-1">
+      {{- with $p.repo }}
+      <a href="{{ . }}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+        {{- partial "icon.html" (dict "name" "github" "class" "size-3.5") }}
+        {{ partial "t.html" (dict "k" "repository" "lang" $lang) }}
+      </a>
+      {{- end }}
+      {{- with $p.homepage }}
+      <a href="{{ . }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+        {{- partial "icon.html" (dict "name" "external-link" "class" "size-3.5") }}
+        {{ partial "t.html" (dict "k" "visit" "lang" $lang) }}
+      </a>
+      {{- end }}
+      {{- with $p.demo }}
+      <a href="{{ . }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+        {{- partial "icon.html" (dict "name" "rocket" "class" "size-3.5") }}
+        {{ partial "t.html" (dict "k" "demo" "lang" $lang) }}
+      </a>
+      {{- end }}
+    </div>
+    {{- end }}
+  </header>
+
+  <div class="prose-almanac">
+    {{ .Page.Content }}
+  </div>
+
+  {{ partial "comments.html" . }}
+</article>
+{{ end }}

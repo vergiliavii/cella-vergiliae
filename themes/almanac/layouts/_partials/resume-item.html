@@ -1,0 +1,9 @@
+{{- /* One bullet of a resume: a bold lead, then the text. Called with a map
+       of lead (or label) and text. */ -}}
+{{- $lead := .lead | default .label -}}
+<li class="resume-bullet flex gap-2.5">
+  <span class="mt-[0.55rem] size-[3px] shrink-0 rounded-full bg-brand/70"></span>
+  <p class="text-[13.5px] leading-[1.78] text-foreground/85">
+    {{- with $lead }}<strong class="font-semibold text-foreground">{{ . }}</strong><span class="mx-1 text-muted-foreground/50">·</span>{{ end }}{{ .text -}}
+  </p>
+</li>

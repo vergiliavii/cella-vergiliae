@@ -1,0 +1,56 @@
+{{- /* One project: name and status, summary, tech, links, and a row of
+       GitHub numbers that almanac.js fills in when it can.
+       dict: project (an entry of the page's projects), site */ -}}
+{{- $p := .project -}}
+{{- $lang := .site.Language -}}
+{{- $status := printf "%v" ($p.status | default "active") -}}
+{{- $label := partial "t.html" (dict "k" "status_active" "lang" $lang) -}}
+{{- $dot := "bg-success" -}}
+{{- if eq $status "maintained" }}{{ $label = partial "t.html" (dict "k" "status_maintained" "lang" $lang) }}{{ $dot = "bg-brand" }}
+{{- else if eq $status "archived" }}{{ $label = partial "t.html" (dict "k" "status_archived" "lang" $lang) }}{{ $dot = "bg-muted-foreground" }}
+{{- else if eq $status "experimental" }}{{ $label = partial "t.html" (dict "k" "status_experimental" "lang" $lang) }}{{ $dot = "bg-warning" }}
+{{- else if ne $status "active" }}{{ $label = $status }}{{ $dot = "bg-muted-foreground" }}{{ end -}}
+{{- $repo := printf "%v" ($p.repo | default "") -}}
+{{- $slug := partial "repo-slug.html" $repo -}}
+{{- /* The card leads to the project's own page, else its site, else its
+       repository. */ -}}
+{{- $link := "" -}}
+{{- with $p.link }}{{ $link = url.Rel . }}{{ else }}{{ with $p.homepage }}{{ $link = . }}{{ else }}{{ $link = $repo }}{{ end }}{{ end -}}
+{{- $away := or (str.HasPrefix "http://" $link) (str.HasPrefix "https://" $link) -}}
+<article class="card card-hover group relative flex flex-col p-5"{{ with $slug }} data-repo="{{ . }}"{{ end }}>
+  <div class="mb-2 flex items-start justify-between gap-3">
+    <h3 class="text-[15px] font-semibold leading-snug tracking-tight">
+      {{- if $link }}
+      <a href="{{ $link }}"{{ if $away }} target="_blank" rel="noopener"{{ end }} class="transition-colors before:absolute before:inset-0 group-hover:text-brand">{{ $p.title }}</a>
+      {{- else }}{{ $p.title }}{{ end -}}
+    </h3>
+    <span class="inline-flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+      <span class="size-1.5 rounded-full {{ $dot }}"></span>
+      {{- $label -}}
+    </span>
+  </div>
+  {{- with $p.summary }}
+  <p class="mb-3 text-[13px] leading-relaxed text-muted-foreground">{{ . }}</p>
+  {{- end }}
+  {{- with $p.tech }}
+  <div class="mb-3 flex flex-wrap gap-1.5">
+    {{- range . }}<span class="chip">{{ . }}</span>{{ end -}}
+  </div>
+  {{- end }}
+  {{- if or $repo $p.homepage $p.demo }}
+  <div class="relative z-10 mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-muted-foreground">
+    {{- with $repo }}
+    <a href="{{ . }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 transition-colors hover:text-brand">{{ partial "icon.html" (dict "name" "github" "class" "size-3") }}{{ partial "t.html" (dict "k" "repository" "lang" $lang) }}</a>
+    {{- end }}
+    {{- with $p.homepage }}
+    <a href="{{ . }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 transition-colors hover:text-brand">{{ partial "icon.html" (dict "name" "external-link" "class" "size-3") }}{{ partial "t.html" (dict "k" "visit" "lang" $lang) }}</a>
+    {{- end }}
+    {{- with $p.demo }}
+    <a href="{{ . }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 transition-colors hover:text-brand">{{ partial "icon.html" (dict "name" "rocket" "class" "size-3") }}{{ partial "t.html" (dict "k" "demo" "lang" $lang) }}</a>
+    {{- end }}
+  </div>
+  {{- end }}
+  {{- if $slug }}
+  {{ partial "github-row.html" (dict "site" .site "class" "mt-auto border-t border-border/70 pt-3") }}
+  {{- end }}
+</article>

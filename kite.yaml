@@ -1,0 +1,47 @@
+site:
+  title: Cella Vergiliae
+  author: VERGILIA
+  baseURL: http://localhost:1717
+  language: zh
+
+content:
+  store: file
+  dir: content
+  defaultCategory: ""
+
+build:
+  output: public
+
+publish:
+  ping:
+    - https://explore.kite.plus/api/v1/ping
+theme:
+  settings:
+    accent: '#eb8eab'
+    copyright: © 2026 VERGILIA
+    favicon: /uploads/THE PEARL.png
+    show_updated: false
+    show_github: false
+    hero_title: Salve in Cella Vergiliae.
+    show_banner: false
+    show_issue: false
+    avatar: /uploads/THE PEARL-2.png
+    hero_text: 古罗马历史二创·学术讨论·文史哲随笔
+    location: SPQR
+    share_image: /uploads/THE PEARL-3.png
+    position: by VERGILIA
+    nav:
+      - icon: auto
+        label: 文章
+        url: /posts/
+      - icon: auto
+        label: 分类
+        url: /categories/
+      - icon: auto
+        label: 标签
+        url: /tags/
+  name: almanac
+plugins:
+  enabled:
+    - comments
+    - search

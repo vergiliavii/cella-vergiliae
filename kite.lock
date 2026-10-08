@@ -1,0 +1,40 @@
+# Written by Kite: the Kite release this site builds with, which kitew
+# runs, and where each theme and plugin installed from an index came from.
+# Their files are in themes/ and plugins/.
+lockfileVersion: 1
+kite:
+  version: 0.1.9
+  checksums: sha256:7cc2ed2d4192f7e5f14af2074792796fc8b044ead03611bb1cce62e451477685
+themes:
+  almanac:
+    version: 0.1.2
+    source: https://cdn.jsdelivr.net/gh/kite-plus/apps@main/index.json
+    resolved: https://cdn.jsdelivr.net/gh/kite-plus/apps@theme-almanac-0.1.2/almanac-0.1.2.zip
+    checksum: sha256:d741e8ee000fc126687b36b73255e3d04ea7940baf3472de4d17f73db63cf142
+    tree: sha256:dc3f8b542ad72b6fcf4293107e5cb51a8bfe2c425f7b866a9637d6edfa34fa1f
+plugins:
+  comments:
+    version: 0.1.0
+    source: https://cdn.jsdelivr.net/gh/kite-plus/apps@main/index.json
+    resolved: https://cdn.jsdelivr.net/gh/kite-plus/apps@plugin-comments-0.1.0/comments-0.1.0.zip
+    checksum: sha256:f02cbcaaadfd5f433f539be2b0a4826a5512b7f86cb769df7b096d4300afb1b3
+    tree: sha256:11de3a2469b3165dfde4c3dc44fc45e275317bfeed5b39ed373de0481e66d27d
+    granted:
+      inject: 2
+      loads:
+        - cdn.jsdelivr.net
+        - giscus.app
+        - registry.npmmirror.com
+        - unpkg.com
+      hooks: []
+  search:
+    version: 0.1.0
+    source: https://cdn.jsdelivr.net/gh/kite-plus/apps@main/index.json
+    resolved: https://cdn.jsdelivr.net/gh/kite-plus/apps@plugin-search-0.1.0/search-0.1.0.zip
+    checksum: sha256:20dee262d440cc4ebe5053d27ab46a3c11f346ebc9c95771b54285ff5fdfc59a
+    tree: sha256:ddfe916a361c81860623fe4cad436ac931329c631623294d630da4724e6a61b2
+    granted:
+      inject: 2
+      loads: []
+      hooks:
+        - build_complete

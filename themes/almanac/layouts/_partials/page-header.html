@@ -1,0 +1,17 @@
+{{- /* The heading of a listing or a special page.
+       dict: eyebrow, title, description, content (rendered HTML), meta */ -}}
+<header class="space-y-3 border-b border-border pb-7">
+  {{- with .eyebrow }}
+  <div class="eyebrow eyebrow-brand">{{ . }}</div>
+  {{- end }}
+  <h1 class="text-3xl font-bold leading-[1.15] tracking-tight md:text-4xl">{{ .title }}</h1>
+  {{- with .description }}
+  <p class="max-w-2xl font-serif text-base leading-relaxed text-muted-foreground md:text-lg">{{ . }}</p>
+  {{- end }}
+  {{- with .content }}
+  <div class="prose-almanac prose-sm max-w-none pt-1">{{ . }}</div>
+  {{- end }}
+  {{- with .meta }}
+  <div class="eyebrow pt-1">{{ . }}</div>
+  {{- end }}
+</header>

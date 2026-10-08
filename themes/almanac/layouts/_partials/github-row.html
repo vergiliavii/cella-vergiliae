@@ -1,0 +1,18 @@
+{{- /* A project's stars, forks, language and last push, hidden until
+       almanac.js fills it in from GitHub. It sits inside an element marked
+       data-repo, under one marked data-github-user.
+       dict: site, class (the row's layout), icon (the icons' size) */ -}}
+{{- $lang := .site.Language -}}
+{{- $icon := .icon | default "size-3" -}}
+<div data-gh-row hidden class="flex items-center gap-3 font-mono text-[11px] text-muted-foreground {{ .class }}">
+  <span data-gh="stars" hidden class="inline-flex items-center gap-1" title="{{ partial "t.html" (dict "k" "gh_stars" "lang" $lang) }}">
+    {{- partial "icon.html" (dict "name" "star" "class" $icon) }}<span data-gh-value class="tabular-nums"></span>
+  </span>
+  <span data-gh="forks" hidden class="inline-flex items-center gap-1" title="{{ partial "t.html" (dict "k" "gh_forks" "lang" $lang) }}">
+    {{- partial "icon.html" (dict "name" "git-fork" "class" $icon) }}<span data-gh-value class="tabular-nums"></span>
+  </span>
+  <span data-gh="language" hidden class="inline-flex items-center gap-1.5">
+    <span class="size-1.5 rounded-full bg-brand/70"></span><span data-gh-value></span>
+  </span>
+  <span data-gh="pushed" hidden class="ml-auto shrink-0">{{ partial "t.html" (dict "k" "gh_pushed" "lang" $lang) }} <span data-gh-value></span></span>
+</div>

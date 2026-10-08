@@ -1,0 +1,27 @@
+{{- /* The pager under a listing. Called with the page's context. */ -}}
+{{- $lang := .Site.Language -}}
+{{- with .Paginator }}
+  {{- if gt .TotalPages 1 }}
+<nav class="mt-10 flex items-center justify-between gap-3" aria-label="{{ partial "t.html" (dict "k" "page_of" "lang" $lang "x" .PageNumber "y" .TotalPages) }}">
+  {{- if .HasPrev }}
+  <a rel="prev" href="{{ .PrevURL }}" class="btn btn-outline btn-sm">
+    {{- partial "icon.html" (dict "name" "chevron-left" "class" "size-3.5") }}
+    {{ partial "t.html" (dict "k" "page_prev" "lang" $lang) }}
+  </a>
+  {{- else }}
+  <span></span>
+  {{- end }}
+  <span class="font-mono text-[11px] tabular-nums text-muted-foreground">
+    {{- partial "t.html" (dict "k" "page_of" "lang" $lang "x" .PageNumber "y" .TotalPages) -}}
+  </span>
+  {{- if .HasNext }}
+  <a rel="next" href="{{ .NextURL }}" class="btn btn-outline btn-sm">
+    {{ partial "t.html" (dict "k" "page_next" "lang" $lang) }}
+    {{- partial "icon.html" (dict "name" "chevron-right" "class" "size-3.5") }}
+  </a>
+  {{- else }}
+  <span></span>
+  {{- end }}
+</nav>
+  {{- end }}
+{{- end -}}

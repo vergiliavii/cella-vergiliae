@@ -1,0 +1,43 @@
+{{ define "main" }}
+{{- /* Every tag as a cloud that grows with a tag's posts, or every category
+       as a card. The stylesheet does the sizing from --count and --max. */ -}}
+{{- $lang := .Site.Language -}}
+{{- $isTags := eq .Page.Type "tags" -}}
+{{- $metaKey := "category_count" -}}
+{{- if $isTags }}{{ $metaKey = "tag_count" }}{{ end -}}
+{{- $max := 1 -}}
+{{- $n := 0.0 -}}
+{{- range .Terms }}{{ if gt .Count $max }}{{ $max = .Count }}{{ end }}{{ $n = math.Add $n 1 }}{{ end -}}
+<div class="mx-auto max-w-3xl space-y-8">
+  {{- partial "page-header.html" (dict
+      "eyebrow" (str.Upper .Page.Type)
+      "title" (partial "page-title.html" .)
+      "meta" (partial "t.html" (dict "k" $metaKey "lang" $lang "n" $n))) }}
+
+  {{- if not .Terms }}
+  <div class="empty-state">{{ partial "t.html" (dict "k" "empty_terms" "lang" $lang) }}</div>
+  {{- else if $isTags }}
+  <div class="flex flex-wrap gap-2">
+    {{- range .Terms }}
+    <a href="{{ .RelPermalink }}" style="--count: {{ .Count }}; --max: {{ $max }};"
+       class="tag-cloud-item inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-foreground/80 transition-colors hover:border-brand/50 hover:bg-brand/5 hover:text-brand">
+      <span>#{{ .Name }}</span>
+      <span class="font-mono text-[10px] tabular-nums text-muted-foreground/70">{{ .Count }}</span>
+    </a>
+    {{- end }}
+  </div>
+  {{- else }}
+  <div class="grid gap-2 sm:grid-cols-2">
+    {{- range .Terms }}
+    <a href="{{ .RelPermalink }}" class="card card-hover group flex items-center justify-between gap-3 p-4">
+      <span class="flex min-w-0 items-center gap-3">
+        <span class="size-1.5 shrink-0 rounded-full bg-brand"></span>
+        <span class="truncate font-medium transition-colors group-hover:text-brand">{{ .Name }}</span>
+      </span>
+      <span class="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">{{ partial "t.html" (dict "k" "post_count" "lang" $lang "n" .Count) }}</span>
+    </a>
+    {{- end }}
+  </div>
+  {{- end }}
+</div>
+{{ end }}

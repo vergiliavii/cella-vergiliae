@@ -1,0 +1,30 @@
+{{ define "main" }}
+{{- /* A page for search, which is the Search plugin's: its button opens the
+       plugin's box, and without the plugin the page says what it needs. */ -}}
+{{- $lang := .Site.Language -}}
+<div class="mx-auto max-w-3xl space-y-6">
+  <header class="space-y-3 border-b border-border pb-7">
+    <div class="eyebrow eyebrow-brand">{{ partial "t.html" (dict "k" "search_label" "lang" $lang) }}</div>
+    <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{{ .Page.Title }}</h1>
+    <p class="text-sm text-muted-foreground">
+      {{- partial "t.html" (dict "k" "search_text_pre" "lang" $lang) -}}
+      <kbd class="inline-flex items-center rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
+      {{- partial "t.html" (dict "k" "search_text_post" "lang" $lang) -}}
+    </p>
+  </header>
+
+  <span class="search-slot">
+    <button type="button" data-kite-search
+            class="flex h-12 w-full items-center gap-3 rounded-lg border border-border bg-card px-4 text-left text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
+      {{- partial "icon.html" (dict "name" "search" "class" "size-4") }}
+      <span class="flex-1">{{ partial "t.html" (dict "k" "search_open" "lang" $lang) }}</span>
+      <kbd class="inline-flex items-center rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">/</kbd>
+    </button>
+  </span>
+  <div class="search-missing empty-state">{{ partial "t.html" (dict "k" "search_missing" "lang" $lang) }}</div>
+
+  {{- with .Page.Content }}
+  <div class="prose-almanac">{{ . }}</div>
+  {{- end }}
+</div>
+{{ end }}

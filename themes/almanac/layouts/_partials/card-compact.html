@@ -1,0 +1,13 @@
+{{- /* The compact card: no cover; meta, title, a serif summary and tags.
+       dict: page, site */ -}}
+{{- $p := .page -}}
+<article class="card card-hover group overflow-hidden">
+  <a href="{{ $p.RelPermalink }}" class="block p-5">
+    {{- partial "card-meta.html" (dict "page" $p "site" .site "category" true "class" "mb-2") }}
+    <h3 class="line-clamp-2 text-lg font-semibold leading-snug tracking-tight transition-colors group-hover:text-brand">{{ $p.Title }}</h3>
+    {{- with $p.Description }}
+    <p class="mt-2 line-clamp-3 font-serif text-[14px] leading-relaxed text-muted-foreground">{{ str.Truncate 160 . }}</p>
+    {{- end }}
+    {{- partial "card-tags.html" (dict "page" $p "limit" 5 "class" "mt-3") }}
+  </a>
+</article>

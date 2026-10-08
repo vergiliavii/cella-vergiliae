@@ -1,0 +1,23 @@
+{{- /* The site owner's avatar, with the status dot when there is a status.
+       dict: site, size (size classes, default size-14), href (a link, as
+       a site path), dot (false to leave the dot out), class */ -}}
+{{- $s := .site.ThemeSettings -}}
+{{- $size := .size | default "size-14" -}}
+{{- $author := .site.Author | default .site.Title -}}
+{{- $dot := ne (printf "%v" .dot) "false" -}}
+{{- $href := "" -}}
+{{- with .href }}{{ $href = url.Rel . }}{{ end -}}
+{{- $wrap := printf "group/avatar relative inline-block shrink-0 %s" (.class | default "") -}}
+{{- if $href }}<a href="{{ $href }}" class="{{ $wrap }}">{{ else }}<span class="{{ $wrap }}">{{ end }}
+  {{- with $s.avatar }}
+  <img src="{{ url.Rel . }}" alt="{{ $author }}" width="96" height="96"
+       class="{{ $size }} rounded-full object-cover bg-muted ring-1 ring-border transition-[box-shadow] group-hover/avatar:ring-brand/60">
+  {{- else }}
+  <span class="{{ $size }} flex items-center justify-center rounded-full bg-muted ring-1 ring-border font-semibold text-muted-foreground">{{ str.Upper (printf "%.1s" $author) }}</span>
+  {{- end }}
+  {{- if and $dot $s.status }}
+  <span class="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-background" title="{{ $s.status }}">
+    <span class="status-dot"></span>
+  </span>
+  {{- end }}
+{{ if $href }}</a>{{ else }}</span>{{ end }}

@@ -1,0 +1,115 @@
+{{ define "main" }}
+{{- /* The home page: a masthead with the owner's profile over the newest
+       posts, as many as home_count, then a link to all of them. Kite pages
+       the home page like any listing, so a later page of it is drawn as a
+       plain feed with a pager. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $author := .Site.Author | default .Site.Title -}}
+{{- $page := 1 -}}
+{{- $total := 0 -}}
+{{- $more := false -}}
+{{- with .Paginator }}{{ $page = .PageNumber }}{{ $total = .TotalItems }}{{ $more = .HasNext }}{{ end -}}
+{{- $about := "" -}}
+{{- with $s.about_page }}{{ $about = url.Rel . }}{{ end -}}
+{{- $archive := url.For "list" "post" -}}
+
+{{- if eq $page 1 }}
+<div class="space-y-12">
+  <section class="space-y-6 pb-2">
+    {{- if $s.show_issue }}
+    <div class="eyebrow eyebrow-brand">{{ partial "t.html" (dict "k" "issue" "lang" $lang "x" (time.Format "2006.01" .Site.BuildTime)) }}</div>
+    {{- end }}
+
+    <div class="flex items-start gap-5 md:gap-6">
+      {{- partial "avatar.html" (dict "site" .Site "size" "size-16 md:size-20" "href" $s.about_page) }}
+      <div class="min-w-0 flex-1 space-y-2.5">
+        <h1 class="text-[clamp(1.5rem,5vw,2.25rem)] font-bold leading-[1.15] tracking-tight">
+          {{- $headline := $s.hero_title }}
+          {{- if $about }}
+          <a href="{{ $about }}" class="transition-colors hover:text-brand">{{ with $headline }}{{ . }}{{ else }}{{ partial "t.html" (dict "k" "hero_title" "lang" $lang "x" $author) }}{{ end }}</a>
+          {{- else }}
+          {{ with $headline }}{{ . }}{{ else }}{{ partial "t.html" (dict "k" "hero_title" "lang" $lang "x" $author) }}{{ end }}
+          {{- end }}
+        </h1>
+        {{- if or $s.position $s.location $s.status }}
+        <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-muted-foreground">
+          {{- with $s.position }}<span>{{ . }}</span>{{ end }}
+          {{- if and $s.position $s.location }}<span class="opacity-40">·</span>{{ end }}
+          {{- with $s.location }}
+          <span class="inline-flex items-center gap-1">{{ partial "icon.html" (dict "name" "map-pin" "class" "size-3.5 opacity-70") }}{{ . }}</span>
+          {{- end }}
+          {{- with $s.status }}
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+            <span class="size-1.5 rounded-full bg-success"></span>{{ . }}
+          </span>
+          {{- end }}
+        </p>
+        {{- end }}
+      </div>
+    </div>
+
+    <p class="max-w-2xl whitespace-pre-line font-serif text-base leading-relaxed text-foreground/80 md:text-lg">
+      {{- with $s.hero_text }}{{ . }}{{ else }}{{ with .Site.Description }}{{ . }}{{ else }}{{ partial "t.html" (dict "k" "hero_text" "lang" $lang) }}{{ end }}{{ end -}}
+    </p>
+
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+      {{- partial "social-links.html" (dict "site" .Site "id" "home" "variant" "outline") }}
+      {{- with $s.motto }}
+      <span class="font-serif text-sm text-muted-foreground">“{{ . }}”</span>
+      {{- end }}
+    </div>
+  </section>
+
+  {{- if .Pages }}
+  {{- $limit := printf "%v" $s.home_count }}
+  {{- $shown := 0.0 }}
+  {{- $cut := false }}
+  <section class="space-y-4">
+    <div class="flex items-end justify-between border-b border-border pb-3">
+      <div class="flex items-baseline gap-3">
+        <h2 class="eyebrow">{{ partial "t.html" (dict "k" "recent_posts" "lang" $lang) }}</h2>
+        <span class="font-mono text-[10px] tabular-nums text-muted-foreground/60">
+          {{- range $i, $p := .Pages }}{{ if eq (printf "%d" $i) $limit }}{{ $cut = true }}{{ end }}{{ if not $cut }}{{ $shown = math.Add $shown 1 }}{{ end }}{{ end -}}
+          {{ $shown }} / {{ $total }}
+        </span>
+      </div>
+      <a href="{{ $archive }}" class="eyebrow transition-colors hover:text-foreground">{{ partial "t.html" (dict "k" "view_all" "lang" $lang) }}</a>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      {{- $cut = false }}
+      {{- range $i, $p := .Pages }}
+        {{- if eq (printf "%d" $i) $limit }}{{ $cut = true }}{{ end }}
+        {{- if not $cut }}
+      {{ partial "card.html" (dict "page" $p "site" $.Site) }}
+        {{- end }}
+      {{- end }}
+    </div>
+
+    {{- if or $cut $more }}
+    <div class="pt-3 text-center">
+      <a href="{{ $archive }}" class="btn btn-outline btn-sm font-mono uppercase tracking-wider">
+        {{ partial "t.html" (dict "k" "view_more" "lang" $lang) }}
+        {{- partial "icon.html" (dict "name" "arrow-right" "class" "size-3.5") }}
+      </a>
+    </div>
+    {{- end }}
+  </section>
+  {{- end }}
+</div>
+{{- else }}
+<div class="space-y-8">
+  {{- partial "page-header.html" (dict
+      "eyebrow" (partial "t.html" (dict "k" "recent_posts" "lang" $lang))
+      "title" (partial "t.html" (dict "k" "page_n" "lang" $lang "n" $page))
+      "meta" (partial "t.html" (dict "k" "post_count" "lang" $lang "n" $total))) }}
+  <div class="flex flex-col gap-4">
+    {{- range .Pages }}
+    {{ partial "card.html" (dict "page" . "site" $.Site) }}
+    {{- end }}
+  </div>
+  {{- partial "pagination.html" . }}
+</div>
+{{- end }}
+{{ end }}

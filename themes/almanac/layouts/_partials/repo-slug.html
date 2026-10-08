@@ -1,0 +1,8 @@
+{{- /* The owner/name of a GitHub repository's address, or nothing for an
+       address elsewhere. Called with the address. */ -}}
+{{- $repo := printf "%v" (. | default "") -}}
+{{- $slug := "" -}}
+{{- range slice "https://github.com/" "http://github.com/" "https://www.github.com/" }}
+  {{- if str.HasPrefix . $repo }}{{ $slug = str.TrimSuffix "/" (str.TrimSuffix ".git" (str.TrimPrefix . $repo)) }}{{ end }}
+{{- end -}}
+{{- $slug -}}

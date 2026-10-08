@@ -1,0 +1,216 @@
+/* Light by default; dark with the system, unless the page says light, or
+   when the page says dark, however its theme says it. */
+.kite-search,
+.kite-search-button {
+  --ks-bg: #fff;
+  --ks-fg: #1f2328;
+  --ks-muted: #6b7280;
+  --ks-border: #e5e7eb;
+  --ks-hover: #f3f4f6;
+  --ks-mark: #fde68a;
+  --ks-mark-fg: inherit;
+  --ks-shadow: rgb(15 23 42 / 0.16);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) .kite-search,
+  :root:not([data-theme="light"]):not(.light) .kite-search-button {
+    --ks-bg: #1c1f24;
+    --ks-fg: #e6e6e6;
+    --ks-muted: #9aa1ab;
+    --ks-border: #2f343b;
+    --ks-hover: #262a31;
+    --ks-mark: #854d0e;
+    --ks-mark-fg: #fef3c7;
+    --ks-shadow: rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-theme="dark"] .kite-search,
+:root[data-theme="dark"] .kite-search-button,
+:root.dark .kite-search,
+:root.dark .kite-search-button {
+  --ks-bg: #1c1f24;
+  --ks-fg: #e6e6e6;
+  --ks-muted: #9aa1ab;
+  --ks-border: #2f343b;
+  --ks-hover: #262a31;
+  --ks-mark: #854d0e;
+  --ks-mark-fg: #fef3c7;
+  --ks-shadow: rgb(0 0 0 / 0.5);
+}
+
+.kite-search-button {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--ks-border);
+  border-radius: 999px;
+  background: var(--ks-bg);
+  color: var(--ks-fg);
+  box-shadow: 0 4px 16px var(--ks-shadow);
+  cursor: pointer;
+}
+
+.kite-search-button:hover {
+  background: var(--ks-hover);
+}
+
+.kite-search-button:focus-visible {
+  outline: 2px solid var(--ks-muted);
+  outline-offset: 2px;
+}
+
+.kite-search {
+  width: min(40rem, calc(100vw - 2rem));
+  max-height: min(36rem, calc(100vh - 4rem));
+  margin: 10vh auto auto;
+  padding: 0;
+  border: 1px solid var(--ks-border);
+  border-radius: 0.75rem;
+  background: var(--ks-bg);
+  color: var(--ks-fg);
+  box-shadow: 0 24px 64px var(--ks-shadow);
+  font: inherit;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.kite-search[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.kite-search::backdrop {
+  background: rgb(15 23 42 / 0.4);
+}
+
+.kite-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--ks-border);
+}
+
+.kite-search-box svg {
+  flex: none;
+  color: var(--ks-muted);
+}
+
+.kite-search-box input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.0625rem;
+}
+
+.kite-search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.kite-search-box kbd {
+  flex: none;
+  padding: 0.2rem 0.375rem;
+  border: 1px solid var(--ks-border);
+  border-radius: 0.25rem;
+  color: var(--ks-muted);
+  font: 0.75rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.kite-search-status {
+  margin: 0;
+  padding: 1.75rem 1rem;
+  color: var(--ks-muted);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.kite-search-status:empty,
+.kite-search-results:empty {
+  display: none;
+}
+
+.kite-search-results {
+  flex: 1;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.kite-search-results a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.125rem 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kite-search-results [aria-selected="true"] a {
+  background: var(--ks-hover);
+}
+
+.kite-search-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kite-search-results time {
+  color: var(--ks-muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.kite-search-text {
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--ks-muted);
+  font-size: 0.875rem;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.kite-search mark {
+  padding: 0 0.0625rem;
+  border-radius: 0.125rem;
+  background: var(--ks-mark);
+  color: var(--ks-mark-fg);
+}
+
+.kite-search-hint {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--ks-border);
+  color: var(--ks-muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 40rem), (hover: none) {
+  .kite-search {
+    margin-top: 1rem;
+  }
+
+  .kite-search-box kbd,
+  .kite-search-hint {
+    display: none;
+  }
+}

@@ -1,0 +1,162 @@
+{{ define "main" }}
+{{- /* Friend links: this site's card for others to copy, how to ask for a
+       link, and the groups of links in the page's front matter. The page's
+       own text goes under the heading.
+
+       groups:
+         - name: Friends
+           desc: People I know.       # beside the group's heading
+           items:
+             - name: Mood
+               url: https://blog.example.com
+               desc: A line about the site.
+               avatar: https://blog.example.com/avatar.png
+       apply: false                   # leaves out how to ask for a link */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $groups := .Page.Params.groups -}}
+{{- $total := 0.0 -}}
+{{- range $groups }}{{ range .items }}{{ $total = math.Add $total 1 }}{{ end }}{{ end -}}
+{{- $siteURL := str.TrimSuffix "/" (url.Abs "/") -}}
+{{- $siteDesc := .Site.Description -}}
+{{- if not $siteDesc }}{{ $siteDesc = partial "t.html" (dict "k" "hero_text" "lang" $lang) }}{{ end -}}
+{{- $avatar := "" -}}
+{{- with $s.avatar }}{{ $avatar = url.Abs . }}{{ end -}}
+<div class="space-y-10">
+  {{- partial "page-header.html" (dict
+      "eyebrow" (partial "t.html" (dict "k" "links_label" "lang" $lang))
+      "title" (.Page.Params.heading | default (partial "t.html" (dict "k" "links_title" "lang" $lang)))
+      "description" (.Page.Params.description | default (partial "t.html" (dict "k" "links_text" "lang" $lang)))
+      "content" .Page.Content) }}
+
+  {{- /* This site, as another site would list it. */}}
+  <section class="card space-y-4 border-dashed bg-background p-5 md:p-6">
+    <div class="flex items-center justify-between gap-3">
+      <div class="eyebrow eyebrow-brand">{{ partial "t.html" (dict "k" "links_card" "lang" $lang) }}</div>
+      <span class="font-mono text-[11px] text-muted-foreground/70">{{ partial "t.html" (dict "k" "links_card_hint" "lang" $lang) }}</span>
+    </div>
+
+    <div class="flex items-start gap-4">
+      {{- partial "avatar.html" (dict "site" .Site "size" "size-12 md:size-14" "dot" false) }}
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="text-base font-semibold tracking-tight md:text-[17px]">{{ .Site.Title }}</div>
+        <a href="{{ $siteURL }}" target="_blank" rel="noopener" class="inline-flex max-w-full items-center gap-1.5 font-mono text-[12px] text-brand hover:underline">
+          <span class="truncate">{{ str.TrimPrefix "http://" (str.TrimPrefix "https://" $siteURL) }}</span>
+          {{- partial "icon.html" (dict "name" "external-link" "class" "size-3 shrink-0") }}
+        </a>
+        <p class="text-[13px] leading-relaxed text-muted-foreground">{{ $siteDesc }}</p>
+      </div>
+    </div>
+
+    <ul class="grid gap-1.5 border-t border-dashed border-border/70 pt-3 text-[13px]">
+      <li class="flex items-baseline gap-3">
+        <span class="w-12 shrink-0 font-mono text-[11px] text-muted-foreground/70">{{ partial "t.html" (dict "k" "links_name" "lang" $lang) }}</span>
+        <span class="min-w-0 flex-1 truncate text-foreground/85">{{ .Site.Title }}</span>
+      </li>
+      <li class="flex items-baseline gap-3">
+        <span class="w-12 shrink-0 font-mono text-[11px] text-muted-foreground/70">{{ partial "t.html" (dict "k" "links_url" "lang" $lang) }}</span>
+        <a href="{{ $siteURL }}" target="_blank" rel="noopener" class="min-w-0 flex-1 truncate font-mono text-[12.5px] text-foreground/85 transition-colors hover:text-brand">{{ $siteURL }}</a>
+      </li>
+      <li class="flex items-baseline gap-3">
+        <span class="w-12 shrink-0 font-mono text-[11px] text-muted-foreground/70">{{ partial "t.html" (dict "k" "links_desc" "lang" $lang) }}</span>
+        <span class="min-w-0 flex-1 truncate text-foreground/85">{{ $siteDesc }}</span>
+      </li>
+      {{- with $avatar }}
+      <li class="flex items-baseline gap-3">
+        <span class="w-12 shrink-0 font-mono text-[11px] text-muted-foreground/70">{{ partial "t.html" (dict "k" "links_avatar" "lang" $lang) }}</span>
+        <a href="{{ . }}" target="_blank" rel="noopener" class="min-w-0 flex-1 truncate font-mono text-[12.5px] text-foreground/85 transition-colors hover:text-brand">{{ . }}</a>
+      </li>
+      {{- end }}
+    </ul>
+
+    <textarea id="link-info-text" class="sr-only" readonly tabindex="-1" aria-hidden="true">
+{{- partial "t.html" (dict "k" "links_name" "lang" $lang) }}: {{ .Site.Title }}
+{{ partial "t.html" (dict "k" "links_url" "lang" $lang) }}: {{ $siteURL }}
+{{ partial "t.html" (dict "k" "links_desc" "lang" $lang) }}: {{ $siteDesc }}
+{{- with $avatar }}
+{{ partial "t.html" (dict "k" "links_avatar" "lang" $lang) }}: {{ . }}{{ end -}}
+    </textarea>
+    <textarea id="link-info-md" class="sr-only" readonly tabindex="-1" aria-hidden="true">
+{{- printf "[%s](%s) — %s" .Site.Title $siteURL $siteDesc }}{{ with $avatar }}
+![]({{ . }}){{ end -}}
+    </textarea>
+
+    <div class="flex flex-wrap items-center gap-2 pt-1 text-[12px]">
+      <span class="text-muted-foreground">{{ partial "t.html" (dict "k" "copy_all" "lang" $lang) }}</span>
+      <button type="button" data-copy-from="link-info-text" class="btn btn-outline btn-sm">
+        <span class="copy-label">{{ partial "t.html" (dict "k" "links_copy_text" "lang" $lang) }}</span>
+      </button>
+      <button type="button" data-copy-from="link-info-md" class="btn btn-outline btn-sm">
+        <span class="copy-label">{{ partial "t.html" (dict "k" "links_copy_md" "lang" $lang) }}</span>
+      </button>
+    </div>
+  </section>
+
+  {{- if ne (printf "%v" .Page.Params.apply) "false" }}
+  <section class="card space-y-3 border-dashed bg-background p-5 md:p-6">
+    <div class="eyebrow eyebrow-brand">{{ partial "t.html" (dict "k" "links_apply" "lang" $lang) }}</div>
+    <ol class="list-inside list-decimal space-y-1.5 text-[14px] leading-relaxed text-foreground/85 marker:text-muted-foreground/70">
+      <li>{{ partial "t.html" (dict "k" "links_apply_1" "lang" $lang) }}</li>
+      <li>
+        {{- partial "t.html" (dict "k" "links_apply_2_pre" "lang" $lang) -}}
+        {{- with $s.about_page }}<a href="{{ url.Rel . }}" class="text-brand hover:underline">{{ partial "t.html" (dict "k" "links_apply_about" "lang" $lang) }}</a>{{ else }}{{ partial "t.html" (dict "k" "links_apply_about" "lang" $lang) }}{{ end -}}
+        {{- partial "t.html" (dict "k" "links_apply_2_post" "lang" $lang) -}}
+        <span class="font-mono text-[0.9em] text-foreground">{{ partial "t.html" (dict "k" "links_apply_fields" "lang" $lang) }}</span>
+        {{- partial "t.html" (dict "k" "links_apply_2_tail" "lang" $lang) -}}
+      </li>
+      <li>{{ partial "t.html" (dict "k" "links_apply_3" "lang" $lang) }}</li>
+    </ol>
+    <p class="pt-1 text-[12px] leading-relaxed text-muted-foreground">{{ partial "t.html" (dict "k" "links_apply_note" "lang" $lang) }}</p>
+  </section>
+  {{- end }}
+
+  {{- if eq $total 0.0 }}
+  <section class="empty-state">
+    <div class="eyebrow mb-2">{{ partial "t.html" (dict "k" "empty" "lang" $lang) }}</div>
+    <p>{{ partial "t.html" (dict "k" "links_empty" "lang" $lang) }}</p>
+  </section>
+  {{- else }}
+    {{- range $groups }}
+      {{- if .items }}
+  <section class="space-y-4">
+    <div class="flex items-end justify-between border-b border-border pb-3">
+      <div class="flex items-baseline gap-3">
+        <h2 class="eyebrow">{{ .name }}</h2>
+        <span class="font-mono text-[10px] tabular-nums text-muted-foreground/60">{{ len .items }} {{ partial "t.html" (dict "k" "sites" "lang" $lang) }}</span>
+      </div>
+      {{- with .desc }}
+      <span class="hidden font-mono text-[11px] text-muted-foreground/70 sm:block">{{ . }}</span>
+      {{- end }}
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {{- range .items }}
+      <a href="{{ .url }}" target="_blank" rel="noopener" class="card card-hover group flex items-start gap-3 p-4">
+        <div class="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted">
+          <span class="font-mono text-[13px] font-semibold text-muted-foreground">{{ str.Upper (printf "%.1s" (.name | default "?")) }}</span>
+          {{- with .avatar }}
+          <img src="{{ . }}" alt="" class="absolute inset-0 size-full object-cover" loading="lazy" width="40" height="40" referrerpolicy="no-referrer" onerror="this.remove()">
+          {{- end }}
+        </div>
+        <div class="min-w-0 flex-1 space-y-1">
+          <div class="flex items-center gap-1.5">
+            <span class="truncate text-[14px] font-semibold tracking-tight transition-colors group-hover:text-brand">{{ .name }}</span>
+            {{- partial "icon.html" (dict "name" "external-link" "class" "size-3 shrink-0 text-muted-foreground/60 transition-colors group-hover:text-brand") }}
+          </div>
+          {{- with .desc }}
+          <p class="line-clamp-2 text-[12.5px] leading-relaxed text-muted-foreground">{{ . }}</p>
+          {{- end }}
+          {{- with .url }}
+          <div class="truncate font-mono text-[11px] text-muted-foreground/60">{{ str.TrimSuffix "/" (str.TrimPrefix "http://" (str.TrimPrefix "https://" (printf "%v" .))) }}</div>
+          {{- end }}
+        </div>
+      </a>
+      {{- end }}
+    </div>
+  </section>
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{ partial "comments.html" . }}
+</div>
+{{ end }}

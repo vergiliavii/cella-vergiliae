@@ -1,0 +1,37 @@
+id: search
+name: Search
+version: 0.1.0
+apiVersion: kite/plugin/v1
+requires: ">=0.1.0 <2.0.0"
+description: Lets readers search every post and page, in their browser and without a server.
+author:
+  name: Kite
+  url: https://github.com/kite-plus
+license: Apache-2.0
+homepage: https://github.com/kite-plus/plugin-search
+
+# plugin.wasm writes the index, plugins/search/index.json, once the site is
+# built; search.js searches it. A theme can mark its own search button with
+# data-kite-search, and a post stays out of the index with search: false in
+# its front matter.
+hooks: [build_complete]
+
+inject:
+  - at: head
+    html: <link rel="stylesheet" href="{{ asset "search.css" }}">
+  - at: body
+    html: |
+      <script>window.KiteSearch = {index: {{ asset "index.json" }}, lang: {{ .Site.Language }}, settings: {{ .Settings }}};</script>
+      <script src="{{ asset "search.js" }}" defer></script>
+
+settings:
+  - key: full_text
+    type: boolean
+    label: Search whole posts
+    help: Search the whole text of every post. Turned off, only titles, tags and summaries are searched, which keeps the index small on a large site.
+    default: true
+  - key: button
+    type: boolean
+    label: Search button
+    help: Show a search button in the corner of every page. It is left out where the theme has its own. Readers can also press / or Ctrl K.
+    default: true

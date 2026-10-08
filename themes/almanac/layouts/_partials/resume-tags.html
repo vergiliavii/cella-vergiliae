@@ -1,0 +1,6 @@
+{{- /* The tech under an entry's heading. Called with a list of words. */ -}}
+<div class="flex flex-wrap gap-1.5 pt-0.5">
+  {{- range . }}
+  <span class="rounded border border-border/70 bg-secondary/30 px-1.5 py-px font-mono text-[10.5px] text-muted-foreground">{{ . }}</span>
+  {{- end }}
+</div>

@@ -1,0 +1,218 @@
+{{ define "main" }}
+{{- /* A resume written in the page's front matter, laid out to print on A4.
+       The print rules are in the stylesheet.
+
+       profile:
+         name: Your Name
+         intent: Backend engineer
+         status: Open to work
+         meta: [Hangzhou, 3 years]
+         contact:
+           - {icon: mail, text: you@example.com, url: "mailto:you@example.com"}
+         stack: [Go, MySQL, Redis]
+         pdf: {url: /resume/you.pdf, filename: you.pdf}
+       skills:      [{label: Go, text: ...}]
+       experience:  [{org, role, date, note, tags, project, items, blocks: [{title, items}]}]
+       projects:    [{name, url, desc, tags, items}]
+       education:   [{school, date, major, note, logo}]
+       summary:     [{label, text}]
+       links:       [{icon, label, text, url}]
+
+       An item is {lead or label, text}. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $r := .Page.Params -}}
+{{- $p := $r.profile -}}
+{{- if not $p }}
+<p class="text-sm text-muted-foreground">{{ partial "t.html" (dict "k" "resume_missing" "lang" $lang) }}</p>
+{{- else }}
+<div class="resume mx-auto max-w-3xl space-y-9">
+
+  <header class="space-y-4 border-b border-border pb-7">
+    <div class="flex items-start gap-5">
+      {{- with $s.avatar }}
+      <img src="{{ url.Rel . }}" alt="{{ $p.name }}" class="size-20 shrink-0 rounded-full object-cover ring-2 ring-border md:size-24">
+      {{- end }}
+      <div class="min-w-0 flex-1 space-y-2">
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 class="text-2xl font-bold tracking-tight md:text-3xl">{{ $p.name }}</h1>
+          {{- with $p.intent }}<span class="text-sm text-muted-foreground">{{ . }}</span>{{ end }}
+          {{- with $p.status }}
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] text-success">
+            <span class="size-1.5 rounded-full bg-success"></span>{{ . }}
+          </span>
+          {{- end }}
+        </div>
+
+        {{- with $p.meta }}
+        <p class="flex flex-wrap items-center gap-x-2 text-[13px] text-muted-foreground">
+          {{- range $i, $m := . }}{{ if $i }}<span class="opacity-40">·</span>{{ end }}<span>{{ $m }}</span>{{ end -}}
+        </p>
+        {{- end }}
+
+        {{- with $p.contact }}
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px]">
+          {{- range . }}
+            {{- if .url }}
+          <a href="{{ .url }}"{{ if not (str.HasPrefix "mailto:" (printf "%v" .url)) }} target="_blank" rel="noopener"{{ end }}
+             class="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-brand">
+            {{- partial "icon.html" (dict "name" (.icon | default "dot") "class" "size-3.5 shrink-0 text-muted-foreground") }}<span>{{ .text }}</span>
+          </a>
+            {{- else }}
+          <span class="inline-flex items-center gap-1.5 text-foreground/80">
+            {{- partial "icon.html" (dict "name" (.icon | default "dot") "class" "size-3.5 shrink-0 text-muted-foreground") }}<span>{{ .text }}</span>
+          </span>
+            {{- end }}
+          {{- end }}
+        </div>
+        {{- end }}
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      {{- with $p.stack }}
+      <div class="flex flex-wrap gap-1.5">
+        {{- range . }}
+        <span class="rounded-md border border-border bg-secondary/40 px-2 py-0.5 font-mono text-[11px] text-secondary-foreground">{{ . }}</span>
+        {{- end }}
+      </div>
+      {{- end }}
+      {{- /* Hands over the typeset PDF rather than the browser's print of this
+             page; the two are different documents. */}}
+      {{- with $p.pdf }}{{ if .url }}
+      <a href="{{ url.Rel .url }}" download="{{ .filename | default "resume.pdf" }}"
+         class="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-foreground/80 transition-colors hover:border-foreground/25 hover:bg-accent hover:text-foreground print:hidden">
+        {{- partial "icon.html" (dict "name" "download" "class" "size-3.5") }}
+        <span>{{ partial "t.html" (dict "k" "resume_export" "lang" $lang) }}</span>
+      </a>
+      {{- end }}{{ end }}
+    </div>
+  </header>
+
+  {{- with $r.skills }}
+  <section class="resume-section space-y-3.5">
+    {{- partial "resume-heading.html" (partial "t.html" (dict "k" "resume_skills" "lang" $lang)) }}
+    <ul class="space-y-2">
+      {{- range . }}{{ partial "resume-item.html" . }}{{ end }}
+    </ul>
+  </section>
+  {{- end }}
+
+  {{- with $r.experience }}
+  <section class="resume-section space-y-3.5">
+    {{- partial "resume-heading.html" (partial "t.html" (dict "k" "resume_experience" "lang" $lang)) }}
+    <div class="space-y-6">
+      {{- range . }}
+      <article class="resume-entry space-y-2.5">
+        <div class="resume-entry-head space-y-1">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-3">
+            <h3 class="text-[15px] font-semibold tracking-tight">{{ .org }}</h3>
+            <span class="font-mono text-[11px] tabular-nums text-muted-foreground">{{ .date }}</span>
+          </div>
+          <p class="text-[12.5px] text-muted-foreground">
+            {{- .role }}{{ with .note }}<span class="mx-1.5 opacity-40">·</span>{{ . }}{{ end -}}
+          </p>
+          {{- with .tags }}{{ partial "resume-tags.html" . }}{{ end }}
+        </div>
+        {{- with .project }}
+        <h4 class="text-[13.5px] font-semibold text-foreground/90">{{ . }}</h4>
+        {{- end }}
+        {{- with .items }}
+        <ul class="space-y-2">{{ range . }}{{ partial "resume-item.html" . }}{{ end }}</ul>
+        {{- end }}
+        {{- range .blocks }}
+        <div class="resume-block space-y-2 pt-0.5">
+          <h4 class="text-[13.5px] font-semibold text-foreground/90">{{ .title }}</h4>
+          <ul class="space-y-2">{{ range .items }}{{ partial "resume-item.html" . }}{{ end }}</ul>
+        </div>
+        {{- end }}
+      </article>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+
+  {{- with $r.projects }}
+  <section class="resume-section space-y-3.5">
+    {{- partial "resume-heading.html" (partial "t.html" (dict "k" "resume_projects" "lang" $lang)) }}
+    <div class="space-y-6">
+      {{- range . }}
+      <article class="resume-entry space-y-2.5">
+        <div class="resume-entry-head space-y-1">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-3">
+            <h3 class="text-[15px] font-semibold tracking-tight">
+              {{- if .url }}<a href="{{ .url }}" target="_blank" rel="noopener" class="transition-colors hover:text-brand">{{ .name }}</a>{{ else }}{{ .name }}{{ end -}}
+            </h3>
+            {{- with .url }}
+            <a href="{{ . }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground print:hidden">
+              {{- partial "icon.html" (dict "name" "github" "class" "size-3") }}
+              <span>{{ str.TrimPrefix "https://" (printf "%v" .) }}</span>
+            </a>
+            {{- end }}
+          </div>
+          {{- with .desc }}<p class="text-[12.5px] text-muted-foreground">{{ . }}</p>{{ end }}
+          {{- with .tags }}{{ partial "resume-tags.html" . }}{{ end }}
+        </div>
+        {{- with .items }}
+        <ul class="space-y-2">{{ range . }}{{ partial "resume-item.html" . }}{{ end }}</ul>
+        {{- end }}
+      </article>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+
+  {{- with $r.education }}
+  <section class="resume-section space-y-3.5">
+    {{- partial "resume-heading.html" (partial "t.html" (dict "k" "resume_education" "lang" $lang)) }}
+    <div class="space-y-4">
+      {{- range . }}
+      <article class="resume-entry flex items-start gap-3.5">
+        {{- with .logo }}
+        <img src="{{ url.Rel . }}" alt="" aria-hidden="true" class="size-10 shrink-0 rounded-md border border-border object-cover">
+        {{- end }}
+        <div class="min-w-0 flex-1 space-y-1">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-3">
+            <h3 class="text-[15px] font-semibold tracking-tight">{{ .school }}</h3>
+            <span class="font-mono text-[11px] tabular-nums text-muted-foreground">{{ .date }}</span>
+          </div>
+          {{- with .major }}<p class="text-[12.5px] text-muted-foreground">{{ . }}</p>{{ end }}
+          {{- with .note }}<p class="text-[13px] leading-relaxed text-foreground/80">{{ . }}</p>{{ end }}
+        </div>
+      </article>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+
+  {{- with $r.summary }}
+  <section class="resume-section space-y-3.5">
+    {{- partial "resume-heading.html" (partial "t.html" (dict "k" "resume_summary" "lang" $lang)) }}
+    <ul class="space-y-2">
+      {{- range . }}{{ partial "resume-item.html" . }}{{ end }}
+    </ul>
+  </section>
+  {{- end }}
+
+  {{- with $r.links }}
+  <section class="resume-section space-y-3.5">
+    {{- partial "resume-heading.html" (partial "t.html" (dict "k" "resume_links" "lang" $lang)) }}
+    <div class="flex flex-wrap gap-2">
+      {{- range . }}
+      <a href="{{ .url }}" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-[13px] transition-colors hover:border-foreground/20 hover:bg-accent">
+        {{- partial "icon.html" (dict "name" (.icon | default "external-link") "class" "size-4 text-muted-foreground") }}
+        <span class="font-medium">{{ .label }}</span>
+        <span class="font-mono text-[11px] text-muted-foreground">{{ .text }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+
+  <p class="pt-1 font-mono text-[11px] text-muted-foreground/70">
+    {{- partial "t.html" (dict "k" "resume_updated" "lang" $lang "x" (time.Format "2006-01" .Page.Lastmod)) -}}
+  </p>
+</div>
+{{- end }}
+{{ end }}

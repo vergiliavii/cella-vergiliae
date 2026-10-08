@@ -1,0 +1,28 @@
+{{- /* The foot of every page: the copyright and a registration number on the
+       left, the feed and the credits on the right. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $feed := url.Rel "rss.xml" -}}
+{{- with $s.feed_page }}{{ $feed = url.Rel . }}{{ end -}}
+<footer class="print:hidden mt-16 border-t border-border">
+  <div class="mx-auto flex max-w-4xl flex-col justify-between gap-x-4 gap-y-3 px-4 py-8 font-mono text-[11px] text-muted-foreground sm:flex-row sm:items-center md:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <span>{{ with $s.copyright }}{{ . }}{{ else }}© {{ time.Format "2006" .Site.BuildTime }} {{ .Site.Title }}{{ end }}</span>
+      {{- with $s.icp }}
+      <span class="opacity-40">·</span>
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="transition-colors hover:text-foreground">{{ . }}</a>
+      {{- end }}
+    </div>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+      <a href="{{ $feed }}" class="inline-flex items-center gap-1 transition-colors hover:text-foreground">
+        {{- partial "icon.html" (dict "name" "rss" "class" "size-3") }}RSS
+      </a>
+      {{- if $s.show_credit }}
+      <a href="https://github.com/kite-plus/kite" target="_blank" rel="noopener" class="transition-colors hover:text-foreground">Kite</a>
+      <a href="https://github.com/kite-plus/theme-almanac" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-foreground/75 transition-colors hover:text-foreground">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" class="size-4 shrink-0" aria-hidden="true"><rect x="3" y="4" width="11" height="24" rx="1.5"/><rect x="18" y="4" width="11" height="24" rx="1.5"/></svg>
+        Almanac
+      </a>
+      {{- end }}
+    </div>
+  </div>
+</footer>

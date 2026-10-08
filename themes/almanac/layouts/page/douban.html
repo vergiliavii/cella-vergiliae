@@ -1,0 +1,81 @@
+{{ define "main" }}
+{{- /* Books and films, from the page's front matter, on two shelves the
+       reader switches between. The tabs are radio buttons, so they work
+       without a script. Each shelf keeps the order it is written in.
+
+       books:
+         - title: Deep Work
+           author: Cal Newport
+           cover: /images/books/deep-work.jpg
+           rating: 5              # 0 to 5
+           status: reading        # finished, wishlist or abandoned
+           summary: A line on what it left you with.
+           link: https://book.douban.com/subject/27056409/
+       movies:
+         - title: Perfect Days
+           director: Wim Wenders
+           poster: /images/films/perfect-days.jpg
+           rating: 5
+           status: watched        # watching, wishlist or abandoned */ -}}
+{{- $lang := .Site.Language -}}
+{{- $books := .Page.Params.books -}}
+{{- $movies := .Page.Params.movies -}}
+{{- $nb := 0.0 -}}{{- range $books }}{{ $nb = math.Add $nb 1 }}{{ end -}}
+{{- $nm := 0.0 -}}{{- range $movies }}{{ $nm = math.Add $nm 1 }}{{ end -}}
+<div class="space-y-8">
+  {{- partial "page-header.html" (dict
+      "eyebrow" (partial "t.html" (dict "k" "douban_label" "lang" $lang))
+      "title" .Page.Title
+      "description" .Page.Params.description
+      "content" .Page.Content) }}
+
+  <div class="tabs">
+    <input type="radio" name="shelf" id="shelf-books" class="tab-input" checked>
+    <input type="radio" name="shelf" id="shelf-movies" class="tab-input">
+    <div class="tab-list flex flex-wrap items-center gap-1 border-b border-border" role="tablist">
+      <label for="shelf-books" class="tab" role="tab">
+        {{- partial "icon.html" (dict "name" "book-open" "class" "size-4") }}
+        <span>{{ partial "t.html" (dict "k" "books" "lang" $lang) }}</span>
+        <span class="tab-count">{{ $nb }}</span>
+      </label>
+      <label for="shelf-movies" class="tab" role="tab">
+        {{- partial "icon.html" (dict "name" "film" "class" "size-4") }}
+        <span>{{ partial "t.html" (dict "k" "movies" "lang" $lang) }}</span>
+        <span class="tab-count">{{ $nm }}</span>
+      </label>
+    </div>
+
+    <section class="tab-panel pt-6" role="tabpanel">
+      {{- if $books }}
+      <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 md:gap-6 lg:grid-cols-5">
+        {{- range $books }}
+        {{ partial "shelf-card.html" (dict "item" . "kind" "book" "site" $.Site) }}
+        {{- end }}
+      </div>
+      {{- else }}
+      <div class="empty-state">
+        <div class="eyebrow mb-2">{{ partial "t.html" (dict "k" "empty" "lang" $lang) }}</div>
+        <p>{{ partial "t.html" (dict "k" "books_empty" "lang" $lang) }}</p>
+      </div>
+      {{- end }}
+    </section>
+
+    <section class="tab-panel pt-6" role="tabpanel">
+      {{- if $movies }}
+      <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 md:gap-6 lg:grid-cols-5">
+        {{- range $movies }}
+        {{ partial "shelf-card.html" (dict "item" . "kind" "movie" "site" $.Site) }}
+        {{- end }}
+      </div>
+      {{- else }}
+      <div class="empty-state">
+        <div class="eyebrow mb-2">{{ partial "t.html" (dict "k" "empty" "lang" $lang) }}</div>
+        <p>{{ partial "t.html" (dict "k" "movies_empty" "lang" $lang) }}</p>
+      </div>
+      {{- end }}
+    </section>
+  </div>
+
+  {{ partial "comments.html" . }}
+</div>
+{{ end }}

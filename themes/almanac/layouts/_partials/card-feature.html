@@ -1,0 +1,30 @@
+{{- /* The feature card: a 16:9 cover on top and the text under it, for the
+       post a site wants seen first. Its cover is the first thing a reader
+       sees, so it loads at once. dict: page, site */ -}}
+{{- $p := .page -}}
+{{- $s := .site.ThemeSettings -}}
+{{- $lang := .site.Language -}}
+<article class="card card-hover group overflow-hidden">
+  <a href="{{ $p.RelPermalink }}" class="block">
+    <div class="p-2.5 pb-0">
+      <div class="aspect-[16/9] w-full">{{ partial "post-cover.html" (dict "page" $p "site" .site "loading" "eager" "fetchpriority" "high") }}</div>
+    </div>
+    <div class="space-y-2.5 p-5 pt-4">
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground">
+        <span class="inline-flex items-center rounded-sm bg-brand/10 px-1.5 py-0.5 uppercase tracking-wider text-brand">{{ partial "t.html" (dict "k" "featured" "lang" $lang) }}</span>
+        {{- if not (time.IsZero $p.PublishDate) }}
+        <span class="opacity-40">·</span>
+        <time datetime="{{ time.Format "2006-01-02" $p.PublishDate }}" class="tabular-nums">{{ time.Format "2006-01-02" $p.PublishDate }}</time>
+        {{- end }}
+        {{- if and $s.show_reading_time (gt $p.WordCount 0) }}
+        <span class="opacity-40">·</span><span>{{ partial "t.html" (dict "k" "reading_time" "lang" $lang "n" (time.Minutes $p.ReadingTime)) }}</span>
+        {{- end }}
+      </div>
+      <h3 class="line-clamp-2 text-xl font-bold leading-tight tracking-tight transition-colors group-hover:text-brand md:text-2xl">{{ $p.Title }}</h3>
+      {{- with $p.Description }}
+      <p class="line-clamp-2 font-serif text-[15px] leading-relaxed text-muted-foreground">{{ str.Truncate 160 . }}</p>
+      {{- end }}
+      {{- partial "card-tags.html" (dict "page" $p "limit" 5 "class" "pt-1") }}
+    </div>
+  </a>
+</article>

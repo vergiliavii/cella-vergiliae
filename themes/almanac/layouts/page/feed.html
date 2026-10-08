@@ -1,0 +1,40 @@
+{{ define "main" }}
+{{- /* The subscribe page: the feed's address with a button that copies it,
+       and the page's own text under it. Browsers no longer draw a feed as
+       a page, so this is where a reader who clicked RSS lands. */ -}}
+{{- $lang := .Site.Language -}}
+{{- $feed := url.Abs "rss.xml" -}}
+<div class="space-y-10">
+  {{- partial "page-header.html" (dict
+      "eyebrow" (partial "t.html" (dict "k" "feed_label" "lang" $lang))
+      "title" (partial "t.html" (dict "k" "feed_title" "lang" $lang "x" .Site.Title))) }}
+
+  <p class="-mt-4 max-w-2xl font-serif text-base leading-relaxed text-muted-foreground md:text-lg">
+    {{- partial "t.html" (dict "k" "feed_text_pre" "lang" $lang) -}}
+    <span class="font-mono text-[0.9em] text-foreground">NetNewsWire</span> / <span class="font-mono text-[0.9em] text-foreground">Reeder</span> / <span class="font-mono text-[0.9em] text-foreground">Inoreader</span>
+    {{- partial "t.html" (dict "k" "feed_text_post" "lang" $lang) -}}
+  </p>
+
+  <section class="card space-y-4 p-5 sm:p-6">
+    <div class="inline-flex items-center gap-1.5 rounded-full bg-muted px-5 py-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.16em] text-foreground">
+      {{- partial "icon.html" (dict "name" "rss" "class" "size-3.5") }}
+      <span>RSS</span>
+    </div>
+    <div class="flex items-stretch overflow-hidden rounded-lg border border-border bg-background transition-colors focus-within:border-foreground/30">
+      <code id="feed-url" class="min-w-0 flex-1 self-center truncate px-3.5 py-2.5 font-mono text-[12.5px] text-foreground sm:text-[13px]">{{ $feed }}</code>
+      <button type="button" data-copy-from="feed-url" class="copy-icon inline-flex w-12 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              title="{{ partial "t.html" (dict "k" "copy" "lang" $lang) }}" aria-label="{{ partial "t.html" (dict "k" "copy" "lang" $lang) }}">
+        {{- partial "icon.html" (dict "name" "copy" "class" "size-4") -}}
+      </button>
+      <a href="{{ url.Rel "rss.xml" }}" target="_blank" rel="noopener" title="{{ partial "t.html" (dict "k" "feed_raw" "lang" $lang) }}" aria-label="{{ partial "t.html" (dict "k" "feed_raw" "lang" $lang) }}"
+         class="inline-flex w-12 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+        {{- partial "icon.html" (dict "name" "external-link" "class" "size-4") -}}
+      </a>
+    </div>
+  </section>
+
+  {{- with .Page.Content }}
+  <div class="prose-almanac">{{ . }}</div>
+  {{- end }}
+</div>
+{{ end }}

@@ -1,0 +1,9 @@
+{{- /* The icon of a social link: the platform's own, or a picture the site
+       gave, drawn in the color of the text through a mask.
+       dict: icon (a built-in icon's name), image (a picture's path), class */ -}}
+{{- $cls := .class | default "size-4" -}}
+{{- with .image }}
+<span class="social-mask shrink-0 {{ $cls }}" style="--icon: url('{{ url.Rel . }}')" aria-hidden="true"></span>
+{{- else }}
+{{- partial "icon.html" (dict "name" (.icon | default "external-link") "class" $cls) }}
+{{- end -}}

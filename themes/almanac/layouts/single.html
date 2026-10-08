@@ -1,0 +1,68 @@
+{{ define "main" }}
+{{- /* A post: its category over a centred title and a mono meta row, the
+       text, its tags, the older and the newer post, and the comments. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $p := .Page -}}
+{{ partial "toc.html" . }}
+<article class="mx-auto max-w-3xl">
+  <header class="mb-10 space-y-4 border-b border-border pb-8 text-center">
+    {{- with $p.Terms "categories" }}
+    <div class="eyebrow eyebrow-brand">
+      {{- with index . 0 }}<a href="{{ .RelPermalink }}" class="underline-offset-4 hover:underline">{{ .Name }}</a>{{ end -}}
+    </div>
+    {{- end }}
+    <h1 class="text-2xl font-bold leading-[1.25] tracking-tight md:text-3xl lg:text-[2.375rem]">{{ $p.Title }}</h1>
+    <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 font-mono text-[11px] text-muted-foreground">
+      {{- $sep := false }}
+      {{- if not (time.IsZero $p.PublishDate) }}
+      <span class="inline-flex items-center gap-1">
+        {{- partial "icon.html" (dict "name" "calendar" "class" "size-3") }}
+        <time datetime="{{ time.Format "2006-01-02T15:04:05Z07:00" $p.PublishDate }}" class="tabular-nums">{{ time.Format "2006-01-02" $p.PublishDate }}</time>
+      </span>
+      {{- $sep = true }}
+      {{- end }}
+      {{- if and $s.show_reading_time (gt $p.WordCount 0) }}
+      {{- if $sep }}
+      <span class="opacity-40">·</span>
+      {{- end }}
+      {{- $sep = true }}
+      <span class="inline-flex items-center gap-1">
+        {{- partial "icon.html" (dict "name" "clock" "class" "size-3") }}
+        {{ partial "t.html" (dict "k" "reading_time" "lang" $lang "n" (time.Minutes $p.ReadingTime)) }}
+      </span>
+      {{- end }}
+      {{- if and $s.show_word_count (gt $p.WordCount 0) }}
+      {{- if $sep }}
+      <span class="opacity-40">·</span>
+      {{- end }}
+      {{- $sep = true }}
+      <span>{{ partial "t.html" (dict "k" "word_count" "lang" $lang "n" $p.WordCount) }}</span>
+      {{- end }}
+      {{- $updated := time.Format "2006-01-02" $p.Lastmod }}
+      {{- if and $s.show_updated (not (time.IsZero $p.Lastmod)) (gt (time.Unix $p.Lastmod) (time.Unix $p.PublishDate)) (ne $updated (time.Format "2006-01-02" $p.PublishDate)) }}
+      {{- if $sep }}
+      <span class="opacity-40">·</span>
+      {{- end }}
+      <span>{{ partial "t.html" (dict "k" "updated_on" "lang" $lang "x" $updated) }}</span>
+      {{- end }}
+    </div>
+  </header>
+
+  <div class="prose-almanac">
+    {{ $p.Content }}
+  </div>
+
+  {{- with $p.Terms "tags" }}
+  <div class="mt-10 flex flex-wrap items-center gap-2 border-t border-border pt-6">
+    <span class="eyebrow mr-1">{{ partial "t.html" (dict "k" "tags_label" "lang" $lang) }}</span>
+    {{- range . }}
+    <a href="{{ .RelPermalink }}" class="chip">#{{ .Name }}</a>
+    {{- end }}
+  </div>
+  {{- end }}
+
+  {{ partial "post-nav.html" . }}
+  {{ partial "comments.html" . }}
+</article>
+{{ end }}

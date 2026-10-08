@@ -1,0 +1,20 @@
+{{- /* The one-line card: date, kind, title and summary, for a short entry.
+       The kind is the first category, else POST. dict: page, site */ -}}
+{{- $p := .page -}}
+{{- $kind := partial "t.html" (dict "k" "post_kind" "lang" .site.Language) -}}
+{{- with $p.Terms "categories" }}{{ $kind = (index . 0).Name }}{{ end -}}
+<a href="{{ $p.RelPermalink }}" class="card card-hover group flex items-center gap-3 px-4 py-3">
+  {{- if time.IsZero $p.PublishDate }}
+  <span class="w-20 shrink-0"></span>
+  {{- else }}
+  <time class="w-20 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground" datetime="{{ time.Format "2006-01-02" $p.PublishDate }}">{{ time.Format "2006-01-02" $p.PublishDate }}</time>
+  {{- end }}
+  <span class="w-14 shrink-0 truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{{ $kind }}</span>
+  <span class="min-w-0 flex-1 truncate text-sm font-medium transition-colors group-hover:text-brand">{{ $p.Title }}</span>
+  {{- with $p.Description }}
+  <span class="hidden max-w-[40%] truncate text-xs text-muted-foreground md:inline">{{ . }}</span>
+  {{- end }}
+  <span class="shrink-0 text-muted-foreground/50 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-brand">
+    {{- partial "icon.html" (dict "name" "arrow-right" "class" "size-3.5") -}}
+  </span>
+</a>

@@ -1,0 +1,16 @@
+{{- /* Five stars. dict: value (0 to 5), class (the stars' size), label (true
+       to add n/5). The value is compared as text, which holds from 0 to 5. */ -}}
+{{- $v := printf "%v" .value -}}
+{{- $cls := .class | default "size-3.5" -}}
+{{- if and .value (ne $v "0") }}
+<span class="inline-flex items-center gap-0.5" role="img" aria-label="{{ $v }}/5">
+  {{- range slice 1 2 3 4 5 }}
+    {{- if ge $v (printf "%d" .) }}
+    <span class="text-warning">{{ partial "icon.html" (dict "name" "star" "class" (printf "%s fill-current" $cls)) }}</span>
+    {{- else }}
+    <span class="text-muted-foreground/30">{{ partial "icon.html" (dict "name" "star" "class" $cls) }}</span>
+    {{- end }}
+  {{- end }}
+  {{- if .label }}<span class="ml-1 font-mono text-[11px] tabular-nums text-muted-foreground">{{ $v }}/5</span>{{ end -}}
+</span>
+{{- end -}}

@@ -1,0 +1,80 @@
+{{- /* A card's cover, sorted by what the picture is rather than by how it
+       fits, since a brand's logo and a photo cannot share one frame. The
+       picture is the post's cover, or the first picture of its text when
+       its front matter names none, and none for cover: false:
+
+         logo   a mark on a tile of its own color, sized to the tile
+         photo  a picture that fills the frame
+         shot   a screenshot or a tall picture, showing its top
+
+       The medium is coverMedium in front matter, else logo for coverFit:
+       contain or an SVG, else photo. The tile's color is coverTint, else
+       one of eight warm tones picked by the first tag, which also paints the
+       gradient drawn for a post with no cover at all.
+       dict: page, site, loading, fetchpriority */ -}}
+{{- $p := .page -}}
+{{- $lang := .site.Language -}}
+{{- $loading := .loading | default "lazy" -}}
+
+{{- $picture := "" -}}
+{{- $cover := $p.Params.cover -}}
+{{- if eq (printf "%v" $cover) "false" }}
+{{- else if $cover }}{{ $picture = printf "%v" $cover }}
+{{- else }}{{ with $p.Images }}{{ $picture = index . 0 }}{{ end }}{{ end -}}
+
+{{- $src := "" -}}
+{{- with $picture -}}
+  {{- if or (str.HasPrefix "http://" .) (str.HasPrefix "https://" .) (str.HasPrefix "//" .) }}{{ $src = . }}
+  {{- else if str.HasPrefix "/" . }}{{ $src = url.Rel . }}
+  {{- else }}{{ $src = printf "%s%s" $p.RelPermalink (str.TrimPrefix "./" .) }}{{ end -}}
+{{- end -}}
+
+{{- $medium := "" -}}
+{{- with $p.Params.coverMedium }}{{ $medium = printf "%v" . }}{{ end -}}
+{{- if not $medium -}}
+  {{- if eq (printf "%v" $p.Params.coverFit) "contain" }}{{ $medium = "logo" }}
+  {{- else if str.HasSuffix ".svg" (str.Lower $src) }}{{ $medium = "logo" }}
+  {{- else }}{{ $medium = "photo" }}{{ end -}}
+{{- end -}}
+
+{{- $key := partial "t.html" (dict "k" "note_tag" "lang" $lang) -}}
+{{- with $p.Terms "tags" }}{{ $key = (index . 0).Name }}{{ end -}}
+{{- $palette := slice
+  (dict "from" "#f3e3d3" "to" "#c96442" "fg" "#5a2d1a")
+  (dict "from" "#ede9de" "to" "#9c8c6e" "fg" "#3d3929")
+  (dict "from" "#e6e2cf" "to" "#7e8964" "fg" "#2e3322")
+  (dict "from" "#e5dfd3" "to" "#8c7d68" "fg" "#332b1f")
+  (dict "from" "#efe2da" "to" "#b27a5c" "fg" "#4a2a1a")
+  (dict "from" "#e9e4dc" "to" "#7c8fa3" "fg" "#283441")
+  (dict "from" "#f0e3d4" "to" "#a6824c" "fg" "#4d3617")
+  (dict "from" "#e8e2d8" "to" "#9c87f5" "fg" "#2f2b48") -}}
+{{- /* The tone is picked by the sixth hex digit of the tag, repeated so a
+       short tag has one: templates have no hash, and this digit is the low
+       half of a CJK character's last byte, which varies most. */ -}}
+{{- $hex := printf "%x" (printf "%s%s%s" $key $key $key) -}}
+{{- $digit := str.TrimPrefix (printf "%.5s" $hex) (printf "%.6s" $hex) -}}
+{{- $slot := index (dict "0" 0 "1" 1 "2" 2 "3" 3 "4" 4 "5" 5 "6" 6 "7" 7 "8" 0 "9" 1 "a" 2 "b" 3 "c" 4 "d" 5 "e" 6 "f" 7) $digit | default 0 -}}
+{{- $tone := index $palette $slot -}}
+
+{{- if not $src }}
+<div class="cover-noise relative h-full w-full overflow-hidden rounded-md"
+     style="background: linear-gradient(135deg, {{ $tone.from }} 0%, {{ $tone.to }} 100%);">
+  <div class="absolute inset-0 flex items-center justify-center px-3">
+    <span class="text-center text-2xl font-bold leading-tight tracking-tight md:text-3xl" style="color: {{ $tone.fg }}; opacity: 0.78;">{{ $key }}</span>
+  </div>
+</div>
+{{- else if eq $medium "logo" }}
+{{- $tint := $tone.to }}
+{{- with $p.Params.coverTint }}{{ $tint = printf "%v" . }}{{ end }}
+<div class="cover-tile relative flex h-full w-full items-center justify-center overflow-hidden rounded-md" style="--tile: {{ $tint }};">
+  <div class="cover-tile__card flex h-[62%] w-[76%] items-center justify-center rounded p-1.5">
+    <img src="{{ $src }}" alt="{{ $p.Title }}" loading="{{ $loading }}" decoding="async"{{ with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}
+         class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]">
+  </div>
+</div>
+{{- else }}
+<div class="relative h-full w-full overflow-hidden rounded-md bg-muted">
+  <img src="{{ $src }}" alt="{{ $p.Title }}" loading="{{ $loading }}" decoding="async"{{ with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}
+       class="size-full object-cover{{ if eq $medium "shot" }} object-top{{ end }} transition-transform duration-500 group-hover:scale-[1.02]">
+</div>
+{{- end -}}

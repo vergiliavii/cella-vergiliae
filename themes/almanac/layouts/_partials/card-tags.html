@@ -1,0 +1,7 @@
+{{- /* The hashtag row of a card. dict: page, limit, class */ -}}
+{{- $limit := .limit | default 5 -}}
+{{- with .page.Terms "tags" }}
+<div class="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground/70 {{ $.class }}">
+  {{- range $i, $t := . }}{{ if lt $i $limit }}<span>#{{ $t.Name }}</span>{{ end }}{{ end -}}
+</div>
+{{- end }}

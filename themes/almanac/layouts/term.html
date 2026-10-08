@@ -1,0 +1,29 @@
+{{ define "main" }}
+{{- /* The posts of one tag or category, as cards. */ -}}
+{{- $lang := .Site.Language -}}
+{{- $isTag := eq .Page.Type "tags" -}}
+{{- $icon := "folder" -}}
+{{- if $isTag }}{{ $icon = "hash" }}{{ end -}}
+{{- $total := 0 -}}
+{{- with .Paginator }}{{ $total = .TotalItems }}{{ end -}}
+<div class="mx-auto max-w-3xl space-y-8">
+  <header class="space-y-3 border-b border-border pb-7">
+    <div class="eyebrow eyebrow-brand inline-flex items-center gap-1.5">
+      {{- partial "icon.html" (dict "name" $icon "class" "size-3") -}}
+      <a href="{{ url.For "taxonomy" .Page.Type }}" class="underline-offset-4 hover:underline">
+        {{- if $isTag }}{{ partial "t.html" (dict "k" "tags" "lang" $lang) }}{{ else if eq .Page.Type "categories" }}{{ partial "t.html" (dict "k" "categories" "lang" $lang) }}{{ else }}{{ str.Title .Page.Type }}{{ end -}}
+      </a>
+    </div>
+    <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{{ if $isTag }}#{{ end }}{{ .Page.Title }}</h1>
+    <div class="eyebrow pt-1">{{ partial "t.html" (dict "k" "post_count" "lang" $lang "n" $total) }}</div>
+  </header>
+
+  <div class="flex flex-col gap-4">
+    {{- range .Pages }}
+    {{ partial "card.html" (dict "page" . "site" $.Site) }}
+    {{- end }}
+  </div>
+
+  {{- partial "pagination.html" . }}
+</div>
+{{ end }}

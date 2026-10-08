@@ -1,0 +1,67 @@
+{{ define "main" }}
+{{- /* The projects in the page's front matter, grouped by status in the order
+       a reader cares about: active, maintained, experimental, any other,
+       then archived. Within a group they keep the order they are written in.
+
+       projects:
+         - title: fluxa
+           status: active        # maintained, experimental, archived, or any word
+           summary: A gateway for AI models.
+           tech: [Go, TypeScript]
+           repo: https://github.com/you/fluxa
+           homepage: https://fluxa.dev
+           demo: https://demo.fluxa.dev
+           link: /posts/fluxa/   # a page of its own, which the card leads to */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $projects := .Page.Params.projects -}}
+{{- $total := 0.0 -}}
+{{- range $projects }}{{ $total = math.Add $total 1 }}{{ end -}}
+{{- $known := slice "active" "maintained" "experimental" "archived" -}}
+{{- $groups := slice
+  (dict "key" "active" "label" (partial "t.html" (dict "k" "status_active" "lang" $lang)) "icon" "rocket")
+  (dict "key" "maintained" "label" (partial "t.html" (dict "k" "status_maintained" "lang" $lang)) "icon" "wrench")
+  (dict "key" "experimental" "label" (partial "t.html" (dict "k" "status_experimental" "lang" $lang)) "icon" "flask")
+  (dict "key" "other" "label" (partial "t.html" (dict "k" "status_other" "lang" $lang)) "icon" "folder")
+  (dict "key" "archived" "label" (partial "t.html" (dict "k" "status_archived" "lang" $lang)) "icon" "archive") -}}
+<div class="space-y-10"{{ with $s.github_user }} data-github-user="{{ . }}"{{ end }}>
+  {{- partial "page-header.html" (dict
+      "eyebrow" "PROJECTS"
+      "title" .Page.Title
+      "description" .Page.Params.description
+      "content" .Page.Content
+      "meta" (partial "t.html" (dict "k" "projects_meta" "lang" $lang "n" $total))) }}
+
+  {{- range $groups }}
+    {{- $key := .key }}
+    {{- $n := 0.0 }}
+    {{- range $projects }}
+      {{- $status := printf "%v" (.status | default "active") }}
+      {{- if or (eq $status $key) (and (eq $key "other") (not (coll.In $known $status))) }}{{ $n = math.Add $n 1 }}{{ end }}
+    {{- end }}
+    {{- if gt $n 0.0 }}
+  <section class="space-y-4">
+    <h2 class="eyebrow flex items-center gap-2">
+      {{- partial "icon.html" (dict "name" .icon "class" "size-3.5") }}
+      <span>{{ .label }}</span>
+      <span class="text-muted-foreground/60">· {{ $n }}</span>
+    </h2>
+    <div class="grid gap-3 md:grid-cols-2">
+      {{- range $projects }}
+        {{- $status := printf "%v" (.status | default "active") }}
+        {{- if or (eq $status $key) (and (eq $key "other") (not (coll.In $known $status))) }}
+      {{ partial "project-card.html" (dict "project" . "site" $.Site) }}
+        {{- end }}
+      {{- end }}
+    </div>
+  </section>
+    {{- end }}
+  {{- end }}
+
+  {{- if not $projects }}
+  <div class="empty-state">{{ partial "t.html" (dict "k" "projects_empty" "lang" $lang) }}</div>
+  {{- end }}
+
+  {{ partial "comments.html" . }}
+</div>
+{{ end }}

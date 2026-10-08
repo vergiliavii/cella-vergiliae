@@ -1,0 +1,20 @@
+{{- /* An article's table of contents, pinned beside the 48rem column from
+       the toc breakpoint up, where there is room for both; below it the
+       headings speak for themselves. Levels 2 to 4 are listed, and only
+       when there are at least two. almanac.js marks the one being read. */ -}}
+{{- $lang := .Site.Language -}}
+{{- $count := 0.0 -}}
+{{- range .Page.TableOfContents }}{{ if and (ge .Level 2) (le .Level 4) .ID }}{{ $count = math.Add $count 1 }}{{ end }}{{ end -}}
+{{- if and .Site.ThemeSettings.show_toc (ge $count 2.0) }}
+<aside class="fixed top-28 hidden max-h-[calc(100vh-9rem)] w-52 overflow-y-auto print:hidden toc:block"
+       style="left: calc(50% + 24rem + 2.5rem);" aria-label="{{ partial "t.html" (dict "k" "toc" "lang" $lang) }}">
+  <div class="eyebrow mb-3">{{ partial "t.html" (dict "k" "toc" "lang" $lang) }}</div>
+  <nav class="toc-list">
+    {{- range .Page.TableOfContents }}
+      {{- if and (ge .Level 2) (le .Level 4) .ID }}
+    <a href="#{{ .ID }}" class="toc-link line-clamp-2" data-level="{{ .Level }}">{{ .Text }}</a>
+      {{- end }}
+    {{- end }}
+  </nav>
+</aside>
+{{- end }}

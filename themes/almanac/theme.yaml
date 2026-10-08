@@ -1,0 +1,331 @@
+name: almanac
+title: Almanac
+version: 0.1.2
+apiVersion: kite/v1
+requires: ">=0.1.4 <2.0.0"
+description: A minimal, content-rich personal hub. A magazine masthead over a feed of cards, shelves for projects, books and films, moments, friend links and a resume, on cream paper by day and warm ink by night, with nothing loaded from third parties unless you ask for it.
+author:
+  name: Amigoer
+  url: https://www.amigoer.com
+license: MIT
+homepage: https://github.com/kite-plus/theme-almanac
+tags: [blog, personal, portfolio, magazine, dark mode]
+screenshot: screenshot.webp
+
+capabilities: [static, dynamic]
+contentTypes: [post, page]
+taxonomies: [tags, categories]
+
+menus:
+  - name: main
+    label: Header
+    description: The links in the header, and in the menu of a narrow screen, where a link's icon param picks its icon. Until the site gives this menu links, the header links under Navigation are shown.
+
+layouts:
+  - name: about
+    label: About
+    description: Your profile over the page's text, and your social links under it.
+    types: [page]
+  - name: projects
+    label: Projects
+    description: The projects listed in the page's front matter, grouped by status, with live GitHub numbers when a GitHub user is set.
+    types: [page]
+  - name: project
+    label: Project
+    description: One project's own page, with its status, tech, GitHub numbers and links over the page's text.
+    types: [page]
+  - name: douban
+    label: Books and films
+    description: The books and films listed in the page's front matter, on two shelves.
+    types: [page]
+  - name: moments
+    label: Moments
+    description: Short entries listed in the page's front matter and grouped by day, each a few lines, photos, a song or a video.
+    types: [page]
+  - name: links
+    label: Friend links
+    description: Your site's card for others to copy, how to ask for a link, and the groups of links in the page's front matter.
+    types: [page]
+  - name: resume
+    label: Resume
+    description: A resume written in the page's front matter, laid out to print on A4.
+    types: [page]
+  - name: feed
+    label: Subscribe
+    description: The address of the site's feed with a button that copies it, and a word on feed readers.
+    types: [page]
+  - name: search
+    label: Search
+    description: A page that opens the search of Kite's Search plugin.
+    types: [page]
+
+settings:
+  - key: profile
+    type: section
+    label: Profile
+    preview: home
+    fields:
+      - key: avatar
+        type: image
+        label: Avatar
+        help: A square picture of you, on the home page, the about page, the links page and in the menu. Left empty, the first letter of your name is drawn instead.
+      - key: position
+        type: string
+        label: What you do
+        placeholder: Backend engineer
+      - key: location
+        type: string
+        label: Where you are
+        placeholder: Hangzhou
+      - key: status
+        type: string
+        label: Status
+        help: A few words in a green pill beside your name, and a dot on your avatar. Left empty, there is neither.
+        placeholder: Open to work
+      - key: hero_title
+        type: string
+        label: Headline
+        help: Left empty, the home page says hello with the site's author.
+      - key: hero_text
+        type: text
+        label: Introduction
+        help: A paragraph under the headline. Left empty, the site's description is used.
+      - key: motto
+        type: string
+        label: Motto
+        help: A line in quotes beside your social links.
+      - key: banner
+        type: image
+        label: Banner
+        help: A wide picture across the top of the home page. Left empty, a soft gradient in the accent color is drawn instead.
+      - key: show_banner
+        type: boolean
+        label: Show the banner
+        default: true
+      - key: show_issue
+        type: boolean
+        label: Show the issue line
+        help: A line such as "ISSUE — 2026.09" over the headline, from the month the site was last built.
+        default: true
+
+  - key: brand
+    type: section
+    label: Look
+    fields:
+      - key: accent
+        type: color
+        label: Accent color
+        help: Links, the active menu entry, labels and buttons. At night the theme lightens it by itself.
+        default: "#c96442"
+        options:
+          - {value: "#c96442", label: Terracotta}
+          - {value: "#4f7a54", label: Moss}
+          - {value: "#3d6fa8", label: Ink blue}
+          - {value: "#8a5a9e", label: Plum}
+      - key: color_scheme
+        type: select
+        label: Day or night
+        help: What a reader sees first. They can still switch with the button in the header.
+        default: auto
+        options:
+          - {value: auto, label: Follow the reader's system}
+          - {value: light, label: Day}
+          - {value: dark, label: Night}
+      - key: web_fonts
+        type: boolean
+        label: Load web fonts
+        help: Inter, Source Serif 4 and JetBrains Mono from Google Fonts, as the theme was drawn with. Turned off, the fonts already on the reader's device are used and nothing is asked of a third party.
+        default: false
+      - key: favicon
+        type: image
+        label: Site icon
+        help: Shown in browser tabs and bookmarks. Left empty, the theme's own mark is used.
+      - key: share_image
+        type: image
+        label: Share picture
+        help: Shown when a page is shared in a chat or on a social network, unless the page has a cover of its own. A PNG or JPEG 1200 by 630 pixels suits it best. Left empty, the avatar is used.
+
+  - key: navigation
+    type: section
+    label: Navigation
+    preview: page
+    fields:
+      - key: nav
+        type: repeat
+        label: Header links
+        help: Shown while the site's header menu has no links. An address within the site starts with a slash. A link to another site opens in a new tab. The icon is only drawn in the menu of a narrow screen, and left on Automatic it is guessed from the address.
+        fields:
+          - {key: label, type: string, label: Label, placeholder: Posts}
+          - {key: url, type: url, label: Address, placeholder: /posts/}
+          - key: icon
+            type: select
+            label: Icon
+            default: auto
+            options:
+              - {value: auto, label: Automatic}
+              - {value: rocket, label: Rocket}
+              - {value: file-text, label: Page}
+              - {value: folder, label: Folder}
+              - {value: book-open, label: Book}
+              - {value: film, label: Film}
+              - {value: archive, label: Archive}
+              - {value: sparkles, label: Sparkles}
+              - {value: user, label: Person}
+              - {value: id-card, label: Card}
+              - {value: hash, label: Hash}
+              - {value: plane, label: Plane}
+              - {value: briefcase, label: Briefcase}
+              - {value: rss, label: Feed}
+              - {value: search, label: Search}
+              - {value: external-link, label: Link}
+      - key: show_github
+        type: boolean
+        label: GitHub button in the header
+        help: Drawn when the social links include GitHub.
+        default: true
+      - key: feed_page
+        type: url
+        label: Subscribe page
+        help: The address of a page drawn with the Subscribe layout, where the RSS icons lead. Left empty, they lead to the feed itself.
+        placeholder: /feed/
+
+  - key: community
+    type: section
+    label: Social
+    preview: home
+    fields:
+      - key: social
+        type: repeat
+        label: Social links
+        help: On the home page, the about page and in the menu, in this order. An entry with no address but a QR code or an account opens a card with them, as WeChat does.
+        fields:
+          - key: platform
+            type: select
+            label: Platform
+            default: github
+            options:
+              - {value: github, label: GitHub}
+              - {value: x, label: X}
+              - {value: bilibili, label: Bilibili}
+              - {value: xiaohongshu, label: Rednote}
+              - {value: wechat, label: WeChat}
+              - {value: zhihu, label: Zhihu}
+              - {value: weibo, label: Weibo}
+              - {value: douyin, label: Douyin}
+              - {value: douban, label: Douban}
+              - {value: juejin, label: Juejin}
+              - {value: gitee, label: Gitee}
+              - {value: csdn, label: CSDN}
+              - {value: youtube, label: YouTube}
+              - {value: tiktok, label: TikTok}
+              - {value: telegram, label: Telegram}
+              - {value: mastodon, label: Mastodon}
+              - {value: bluesky, label: Bluesky}
+              - {value: instagram, label: Instagram}
+              - {value: discord, label: Discord}
+              - {value: threads, label: Threads}
+              - {value: facebook, label: Facebook}
+              - {value: reddit, label: Reddit}
+              - {value: medium, label: Medium}
+              - {value: stackoverflow, label: Stack Overflow}
+              - {value: twitch, label: Twitch}
+              - {value: steam, label: Steam}
+              - {value: mail, label: Email}
+              - {value: rss, label: RSS}
+              - {value: other, label: Other}
+          - {key: url, type: url, label: Address, help: "A link, or mailto: with an email address.", placeholder: https://github.com/you}
+          - {key: label, type: string, label: Name, help: Left empty, the platform's own name is used.}
+          - {key: icon, type: image, label: Icon, help: An SVG drawn in one color for a platform the theme does not know. It takes the color of the text.}
+          - {key: qr, type: image, label: QR code}
+          - {key: account, type: string, label: Account, help: Shown in the card with a button that copies it.}
+          - {key: hint, type: string, label: Caption, help: Under the QR code. Left empty, it asks the reader to scan it.}
+          - {key: hidden, type: boolean, label: Hidden, default: false}
+
+  - key: home
+    type: section
+    label: Home page
+    preview: home
+    fields:
+      - key: home_count
+        type: number
+        label: Posts on the home page
+        help: How many of the newest posts the home page shows before the link to all of them. It is at most the site's page size.
+        default: 8
+        min: 1
+        max: 50
+        step: 1
+      - key: card_fallback
+        type: select
+        label: A post without a cover
+        help: How a post is drawn in the feed when it has no cover and chooses no card of its own.
+        default: compact
+        options:
+          - {value: compact, label: As text}
+          - {value: tile, label: With a tile of its first tag}
+
+  - key: posts
+    type: section
+    label: Posts
+    preview: post
+    fields:
+      - key: show_reading_time
+        type: boolean
+        label: Show the reading time
+        default: true
+      - key: show_word_count
+        type: boolean
+        label: Show the word count
+        default: true
+      - key: show_updated
+        type: boolean
+        label: Show when a post was updated
+        help: When it was updated on a later day than it was published.
+        default: true
+      - key: show_toc
+        type: boolean
+        label: Show a table of contents
+        help: Beside a post with at least two headings, on a screen wide enough for it.
+        default: true
+      - key: reading_bar
+        type: boolean
+        label: Show the reading bar
+        help: A bar under the header with the title and how far the reader has read, once the title has scrolled away.
+        default: true
+
+  - key: pages
+    type: section
+    label: Special pages
+    preview: page
+    fields:
+      - key: github_user
+        type: string
+        label: GitHub user
+        help: On a page drawn with the Projects layout, the stars, forks, language and last push of this user's repositories are fetched by the reader's browser from GitHub. Left empty, nothing is fetched.
+        placeholder: octocat
+      - key: about_page
+        type: url
+        label: About page
+        help: Where the home page's headline and the links page lead.
+        default: /about/
+      - key: resume_page
+        type: url
+        label: Resume page
+        help: Linked beside your social links on the about page. Left empty, there is no such link.
+        placeholder: /resume/
+
+  - key: footer
+    type: section
+    label: Footer
+    fields:
+      - key: icp
+        type: string
+        label: ICP number
+        help: A registration number for a site hosted in mainland China, linked to the registry.
+      - key: copyright
+        type: string
+        label: Copyright
+        help: Left empty, the site is credited to itself for the year it was last built.
+      - key: show_credit
+        type: boolean
+        label: Credit Kite and Almanac
+        default: true

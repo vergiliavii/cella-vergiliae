@@ -1,0 +1,105 @@
+{{- /* What a page says about itself to browsers, search engines and the apps
+       a link is shared in. Called with the page's context. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $kind := printf "%s" .Page.Kind -}}
+{{- $page := 1 -}}
+{{- with .Paginator }}{{ $page = .PageNumber }}{{ end -}}
+{{- $home := and (eq $kind "home") (eq $page 1) -}}
+{{- $name := partial "page-title.html" . -}}
+<title>
+  {{- if $home }}{{ .Site.Title }}
+  {{- else if eq $kind "home" }}{{ partial "t.html" (dict "k" "page_n" "lang" $lang "n" $page) }} · {{ .Site.Title }}
+  {{- else }}{{ $name }} · {{ .Site.Title }}{{ end -}}
+</title>
+  {{- $description := .Site.Description }}
+  {{- if ne $kind "home" }}{{ with .Page.Description }}{{ $description = . }}{{ end }}{{ end }}
+  {{- with $description }}
+  <meta name="description" content="{{ . }}">
+  {{- end }}
+  {{- /* A page's own keywords, a list or a line, stand in for the site's. */ -}}
+  {{- $keywords := .Site.Keywords }}
+  {{- with .Page.Params.keywords }}{{ $keywords = . }}{{ end }}
+  {{- with $keywords }}
+  <meta name="keywords" content="{{ if eq (printf "%T" .) "string" }}{{ . }}{{ else }}{{ range $i, $k := . }}{{ if $i }}, {{ end }}{{ $k }}{{ end }}{{ end }}">
+  {{- end }}
+  {{- with .Site.Author }}
+  <meta name="author" content="{{ . }}">
+  {{- end }}
+  {{- if .Site.NoIndex }}
+  <meta name="robots" content="noindex, nofollow">
+  {{- end }}
+  {{- /* A page's picture stands in for the site's share picture, and the
+         avatar for that: its cover, beside it in its folder or elsewhere,
+         or the first picture of its text when it names none, and none for
+         cover: false. */ -}}
+  {{- $image := "" }}
+  {{- with $s.avatar }}{{ $image = url.Abs . }}{{ end }}
+  {{- with $s.share_image }}{{ $image = url.Abs . }}{{ end }}
+  {{- $picture := "" }}
+  {{- $cover := .Page.Params.cover }}
+  {{- if eq (printf "%v" $cover) "false" }}
+  {{- else if $cover }}{{ $picture = printf "%v" $cover }}
+  {{- else }}{{ with .Page.Images }}{{ $picture = index . 0 }}{{ end }}{{ end }}
+  {{- with $picture }}
+    {{- if or (str.HasPrefix "http://" .) (str.HasPrefix "https://" .) }}{{ $image = . }}
+    {{- else if str.HasPrefix "/" . }}{{ $image = url.Abs . }}
+    {{- else }}{{ $image = printf "%s%s" $.Page.Permalink (str.TrimPrefix "./" .) }}{{ end }}
+  {{- end }}
+  {{- $article := and (eq $kind "single") (eq .Page.Type "post") }}
+  {{- if ne $kind "404" }}
+  <link rel="canonical" href="{{ .Page.Permalink }}">
+  <meta property="og:url" content="{{ .Page.Permalink }}">
+  {{- end }}
+  <meta property="og:site_name" content="{{ .Site.Title }}">
+  <meta property="og:type" content="{{ if $article }}article{{ else }}website{{ end }}">
+  <meta property="og:title" content="{{ if $home }}{{ .Site.Title }}{{ else }}{{ $name }}{{ end }}">
+  {{- with $description }}
+  <meta property="og:description" content="{{ . }}">
+  {{- end }}
+  <meta property="og:locale" content="{{ str.Replace "-" "_" $lang }}">
+  {{- with $image }}
+  <meta property="og:image" content="{{ . }}">
+  {{- end }}
+  {{- if $article }}
+  {{- if not (time.IsZero .Page.PublishDate) }}
+  <meta property="article:published_time" content="{{ time.Format "2006-01-02T15:04:05Z07:00" .Page.PublishDate }}">
+  {{- end }}
+  {{- if not (time.IsZero .Page.Lastmod) }}
+  <meta property="article:modified_time" content="{{ time.Format "2006-01-02T15:04:05Z07:00" .Page.Lastmod }}">
+  {{- end }}
+    {{- range .Page.Terms "tags" }}
+  <meta property="article:tag" content="{{ .Name }}">
+    {{- end }}
+  {{- end }}
+  <meta name="twitter:card" content="{{ if $image }}summary_large_image{{ else }}summary{{ end }}">
+  <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#222220" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ url.Rel "rss.xml" }}">
+  {{- with $s.favicon }}
+  <link rel="icon" href="{{ url.Rel . }}">
+  {{- else }}
+  <link rel="icon" type="image/svg+xml" href="{{ url.Rel "almanac/favicon.svg" }}">
+  <link rel="icon" type="image/x-icon" href="{{ url.Rel "almanac/favicon.ico" }}" sizes="32x32">
+  <link rel="apple-touch-icon" href="{{ url.Rel "almanac/apple-touch-icon.svg" }}">
+  <link rel="mask-icon" href="{{ url.Rel "almanac/safari-pinned-tab.svg" }}" color="#c0764e">
+  {{- end }}
+  {{- if $article }}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ .Page.Title }},
+    "description": {{ $description }},
+    {{- if not (time.IsZero .Page.PublishDate) }}
+    "datePublished": {{ time.Format "2006-01-02T15:04:05Z07:00" .Page.PublishDate }},
+    {{- end }}
+    {{- if not (time.IsZero .Page.Lastmod) }}
+    "dateModified": {{ time.Format "2006-01-02T15:04:05Z07:00" .Page.Lastmod }},
+    {{- end }}
+    "author": {"@type": "Person", "name": {{ with .Site.Author }}{{ . }}{{ else }}{{ .Site.Title }}{{ end }}, "url": {{ url.Abs "/" }}},
+    "mainEntityOfPage": {"@type": "WebPage", "@id": {{ .Page.Permalink }}}{{ with $image }},
+    "image": {{ . }}{{ end }}
+  }
+  </script>
+  {{- end }}

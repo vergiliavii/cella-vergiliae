@@ -1,0 +1,50 @@
+{{- /* A book or a film on a shelf: a 2:3 cover, its title, who made it, its
+       rating and where the reader is with it.
+       dict: item, kind ("book" or "movie"), site */ -}}
+{{- $it := .item -}}
+{{- $lang := .site.Language -}}
+{{- $book := eq .kind "book" -}}
+{{- $cover := "" -}}
+{{- with or $it.cover $it.poster -}}
+  {{- $c := printf "%v" . -}}
+  {{- if or (str.HasPrefix "http://" $c) (str.HasPrefix "https://" $c) }}{{ $cover = $c }}{{ else }}{{ $cover = url.Rel $c }}{{ end -}}
+{{- end -}}
+{{- $by := $it.director -}}
+{{- $icon := "film" -}}
+{{- if $book }}{{ $by = $it.author }}{{ $icon = "book-open" }}{{ end -}}
+{{- $status := printf "%v" ($it.status | default "") -}}
+{{- $statusKey := "" -}}
+{{- if $book -}}
+  {{- if eq $status "reading" }}{{ $statusKey = "status_reading" }}{{ else if eq $status "finished" }}{{ $statusKey = "status_finished" }}{{ else if eq $status "wishlist" }}{{ $statusKey = "status_book_wishlist" }}{{ else if eq $status "abandoned" }}{{ $statusKey = "status_book_abandoned" }}{{ end -}}
+{{- else -}}
+  {{- if eq $status "watching" }}{{ $statusKey = "status_watching" }}{{ else if eq $status "watched" }}{{ $statusKey = "status_watched" }}{{ else if eq $status "wishlist" }}{{ $statusKey = "status_movie_wishlist" }}{{ else if eq $status "abandoned" }}{{ $statusKey = "status_movie_abandoned" }}{{ end -}}
+{{- end -}}
+{{- $link := "" -}}
+{{- with $it.link }}{{ $link = . }}{{ if str.HasPrefix "/" . }}{{ $link = url.Rel . }}{{ end }}{{ end -}}
+{{- $away := or (str.HasPrefix "http://" $link) (str.HasPrefix "https://" $link) -}}
+{{- if $link }}<a href="{{ $link }}"{{ if $away }} target="_blank" rel="noopener"{{ end }} class="group block">{{ else }}<div class="group block">{{ end }}
+  <div class="relative aspect-[2/3] overflow-hidden rounded-md border border-border bg-muted shadow-sm transition-[border-color,box-shadow] group-hover:border-foreground/35 group-hover:shadow-md">
+    {{- if $cover }}
+    <img src="{{ $cover }}" alt="{{ $it.title }}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+         class="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]">
+    {{- else }}
+    <div class="flex size-full flex-col items-center justify-center gap-2 p-3 text-center text-muted-foreground/40">
+      {{- partial "icon.html" (dict "name" $icon "class" "size-7") }}
+      <span class="line-clamp-3 font-serif text-[11px] leading-snug text-muted-foreground/70">{{ $it.title }}</span>
+    </div>
+    {{- end }}
+    {{- if $statusKey }}
+    <span class="absolute left-1.5 top-1.5 rounded-sm bg-background/85 px-1.5 py-0.5 font-mono text-[10px] text-foreground/80 backdrop-blur-sm">{{ partial "t.html" (dict "k" $statusKey "lang" $lang) }}</span>
+    {{- end }}
+  </div>
+  <div class="mt-2.5 px-0.5">
+    <h4 class="line-clamp-1 text-sm font-medium transition-colors group-hover:text-brand">{{ $it.title }}</h4>
+    {{- with $by }}
+    <p class="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{{ . }}</p>
+    {{- end }}
+    <div class="mt-1">{{ partial "rating.html" (dict "value" $it.rating "class" "size-3") }}</div>
+    {{- with $it.summary }}
+    <p class="mt-1.5 line-clamp-3 font-serif text-[12px] leading-relaxed text-muted-foreground">{{ . }}</p>
+    {{- end }}
+  </div>
+{{ if $link }}</a>{{ else }}</div>{{ end }}

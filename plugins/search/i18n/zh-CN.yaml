@@ -1,0 +1,10 @@
+plugin:
+  title: 站内搜索
+  description: 让读者在浏览器里搜索全部文章和页面，不需要服务端。
+  settings:
+    full_text:
+      label: 搜索全文
+      help: 搜索每篇文章的全文。关闭后只搜索标题、标签和摘要，文章很多时索引更小。
+    button:
+      label: 搜索按钮
+      help: 在每个页面角落显示搜索按钮；主题自带搜索按钮时不显示。读者也可以按 / 或 Ctrl K 打开搜索。

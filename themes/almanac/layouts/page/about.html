@@ -1,0 +1,42 @@
+{{ define "main" }}
+{{- /* The about page: the owner's profile over the page's text, and the
+       social links, with the resume, under it. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $author := .Site.Author | default .Site.Title -}}
+<div class="mx-auto max-w-2xl space-y-8">
+  <header class="flex items-center gap-5 border-b border-border pb-8">
+    {{- partial "avatar.html" (dict "site" .Site "size" "size-20 md:size-24") }}
+    <div class="min-w-0 flex-1 space-y-1.5">
+      <h1 class="text-2xl font-bold tracking-tight md:text-3xl">{{ $author }}</h1>
+      {{- if or $s.position $s.location $s.status }}
+      <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-muted-foreground">
+        {{- with $s.position }}<span>{{ . }}</span>{{ end }}
+        {{- if and $s.position $s.location }}<span class="opacity-40">·</span>{{ end }}
+        {{- with $s.location }}
+        <span class="inline-flex items-center gap-1">{{ partial "icon.html" (dict "name" "map-pin" "class" "size-3.5 opacity-70") }}{{ . }}</span>
+        {{- end }}
+        {{- with $s.status }}
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+          <span class="size-1.5 rounded-full bg-success"></span>{{ . }}
+        </span>
+        {{- end }}
+      </p>
+      {{- end }}
+    </div>
+  </header>
+
+  <div class="prose-almanac">
+    {{ .Page.Content }}
+  </div>
+
+  {{- if or $s.social $s.resume_page }}
+  <section class="space-y-3 border-t border-border pt-6">
+    <h2 class="eyebrow">{{ partial "t.html" (dict "k" "contact" "lang" $lang) }}</h2>
+    {{- partial "social-links.html" (dict "site" .Site "id" "about" "variant" "buttons" "resume" $s.resume_page) }}
+  </section>
+  {{- end }}
+
+  {{ partial "comments.html" . }}
+</div>
+{{ end }}

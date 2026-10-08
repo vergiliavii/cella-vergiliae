@@ -1,0 +1,31 @@
+{{- /* The header links, for the header itself and for the menu of a narrow
+       screen: the site's main menu, or while the site has none the nav
+       setting, or with neither the home page and the archive. Called with
+       (dict "ctx" . "variant" "header" or "drawer"). */ -}}
+{{- $ctx := .ctx -}}
+{{- $variant := .variant -}}
+{{- $lang := $ctx.Site.Language -}}
+{{- $here := $ctx.Page.RelPermalink -}}
+{{- with $ctx.Site.Menus.main }}
+  {{- /* A menu's addresses are under the site's path already. The header
+         draws one level, so an entry that only heads others is left out. */ -}}
+  {{- range . }}{{ if .URL }}
+    {{- $icon := "" }}
+    {{- with .Params }}{{ with .icon }}{{ $icon = . }}{{ end }}{{ end }}
+    {{- partial "nav-link.html" (dict "label" .Name "href" .URL "icon" $icon "variant" $variant "here" $here) }}
+  {{- end }}{{ end }}
+{{- else }}
+  {{- $items := $ctx.Site.ThemeSettings.nav }}
+  {{- if not $items }}
+    {{- $items = slice
+      (dict "label" (partial "t.html" (dict "k" "posts" "lang" $lang)) "href" (url.For "list" "post") "icon" "file-text")
+      (dict "label" (partial "t.html" (dict "k" "tags" "lang" $lang)) "href" (url.For "taxonomy" "tags") "icon" "hash") }}
+  {{- end }}
+  {{- range $items }}
+    {{- if and .label (or .href .url) }}
+      {{- $href := .href }}
+      {{- if not $href }}{{ $href = url.Rel .url }}{{ end }}
+      {{- partial "nav-link.html" (dict "label" .label "href" $href "icon" .icon "variant" $variant "here" $here) }}
+    {{- end }}
+  {{- end }}
+{{- end -}}

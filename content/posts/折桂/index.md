@@ -13,6 +13,8 @@ tags:
 description: 这顶桂冠，永恒是属于你的。
 categories:
   - 单篇小说
+updated_at: 2026-10-08T07:32:15Z
+deleted_at: 2026-10-08T07:32:15Z
 ---
 
 [原作2018.3.10]

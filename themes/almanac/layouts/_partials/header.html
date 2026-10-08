@@ -1,0 +1,107 @@
+{{- /* The top of every page: the home page's banner, then a header that
+       stays at the top. The two are siblings so the header's containing
+       block is <body> and it stays pinned for the whole page. Over the
+       banner the header starts clear and fills in as the page scrolls. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $kind := printf "%s" .Page.Kind -}}
+{{- $page := 1 -}}
+{{- with .Paginator }}{{ $page = .PageNumber }}{{ end -}}
+{{- $banner := and (eq $kind "home") (eq $page 1) $s.show_banner -}}
+{{- $github := "" -}}
+{{- range $s.social }}{{ if and (eq .platform "github") .url (not .hidden) }}{{ $github = .url }}{{ end }}{{ end -}}
+{{- $feed := url.Rel "rss.xml" -}}
+{{- with $s.feed_page }}{{ $feed = url.Rel . }}{{ end -}}
+
+{{- if $banner }}
+<div class="print:hidden relative h-44 overflow-hidden md:h-60 lg:h-72{{ if not $s.banner }} banner-fallback{{ end }}"
+     {{- with $s.banner }} style="background: url('{{ url.Rel . }}') center / cover no-repeat;"{{ end }}>
+  <div class="cover-noise pointer-events-none absolute inset-0 opacity-50"></div>
+  {{- /* The header overlaps this bottom edge; the scrim keeps its text legible. */}}
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-linear-to-b from-transparent via-background/45 to-background/85"></div>
+</div>
+{{- end }}
+
+<header class="site-header print:hidden sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md transition-colors duration-200{{ if $banner }} -mt-14{{ end }}"{{ if $banner }} data-over-banner{{ end }}>
+  <div class="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+    <div class="flex h-14 items-center justify-between gap-4">
+
+      <div class="flex min-w-0 items-center gap-4 lg:gap-6">
+        <label for="nav-toggle" class="menu-button icon-btn -ml-1 md:hidden" aria-hidden="true">
+          {{- partial "icon.html" "menu" -}}
+        </label>
+        <a href="{{ url.For "home" }}" class="shrink-0 text-[16px] font-bold tracking-tight">{{ .Site.Title }}</a>
+        <nav class="hidden items-center gap-4 md:flex lg:gap-5" aria-label="{{ partial "t.html" (dict "k" "nav" "lang" $lang) }}">
+          {{- partial "nav-links.html" (dict "ctx" . "variant" "header") }}
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-0.5">
+        {{- if and $github $s.show_github }}
+        <a href="{{ $github }}" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"
+           class="hidden h-8 items-center gap-1.5 rounded-md px-2 text-[13px] font-medium text-foreground/75 transition-colors hover:bg-accent hover:text-foreground md:inline-flex">
+          {{- partial "icon.html" (dict "name" "github" "class" "size-4") }}
+          <span class="hidden xl:inline">GitHub</span>
+        </a>
+        <span class="header-rule mx-1 hidden h-5 w-px bg-border transition-colors md:block"></span>
+        {{- end }}
+
+        <span class="search-slot">
+          <button type="button" data-kite-search
+                  class="search-box mr-1 hidden h-8 w-48 items-center gap-2 rounded-md border border-border bg-background/70 px-2.5 font-mono text-xs text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground lg:inline-flex">
+            {{- partial "icon.html" (dict "name" "search" "class" "size-3.5") }}
+            <span>{{ partial "t.html" (dict "k" "search_box" "lang" $lang) }}</span>
+            <kbd class="ml-auto inline-flex shrink-0 items-center rounded border border-border px-1 text-[10px]">⌘K</kbd>
+          </button>
+          <button type="button" data-kite-search class="icon-btn lg:hidden" aria-label="{{ partial "t.html" (dict "k" "search" "lang" $lang) }}">
+            {{- partial "icon.html" "search" -}}
+          </button>
+        </span>
+
+        <button type="button" class="icon-btn theme-toggle" data-theme-toggle
+                aria-label="{{ partial "t.html" (dict "k" "theme_toggle" "lang" $lang) }}"
+                title="{{ partial "t.html" (dict "k" "theme_auto" "lang" $lang) }}"
+                data-light="{{ partial "t.html" (dict "k" "theme_light" "lang" $lang) }}"
+                data-dark="{{ partial "t.html" (dict "k" "theme_dark" "lang" $lang) }}"
+                data-auto="{{ partial "t.html" (dict "k" "theme_auto" "lang" $lang) }}">
+          <span class="theme-icon theme-icon-light">{{ partial "icon.html" "sun" }}</span>
+          <span class="theme-icon theme-icon-dark">{{ partial "icon.html" "moon" }}</span>
+          <span class="theme-icon theme-icon-auto">{{ partial "icon.html" "monitor" }}</span>
+        </button>
+
+        <a href="{{ $feed }}" class="icon-btn" aria-label="RSS" title="{{ partial "t.html" (dict "k" "subscribe" "lang" $lang) }}">
+          {{- partial "icon.html" "rss" -}}
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+{{- /* The reading bar of an article: it slides in once the title has
+       scrolled away, names the section and the title, and fills with how
+       far the reader has read. It takes a script, so without one it stays
+       away. */}}
+{{- if and (eq $kind "single") (eq .Page.Type "post") $s.reading_bar }}
+<div class="reading-bar print:hidden fixed inset-x-0 top-14 z-30 border-b border-border bg-background/90 backdrop-blur-md transition-all duration-200" aria-hidden="true">
+  <div class="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+    <div class="grid h-11 grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <span class="eyebrow inline-flex items-center gap-1.5">
+        {{- partial "icon.html" (dict "name" "file-text" "class" "size-3.5") }}
+        <span class="hidden sm:inline">{{ with .Page.Terms "categories" }}{{ (index . 0).Name }}{{ else }}{{ partial "t.html" (dict "k" "posts" "lang" $lang) }}{{ end }}</span>
+      </span>
+      <button type="button" data-to-top tabindex="-1"
+              class="min-w-0 truncate text-center text-[15px] font-semibold text-foreground/90 transition-colors hover:text-foreground md:text-base"
+              title="{{ partial "t.html" (dict "k" "back_to_top" "lang" $lang) }}">
+        {{- .Page.Title -}}
+      </button>
+      <button type="button" data-to-top tabindex="-1"
+              class="eyebrow inline-flex items-center gap-1 justify-self-end transition-colors hover:text-foreground"
+              title="{{ partial "t.html" (dict "k" "back_to_top" "lang" $lang) }}">
+        {{- partial "icon.html" (dict "name" "arrow-up" "class" "size-3.5") }}
+        <span class="hidden sm:inline">{{ partial "t.html" (dict "k" "back_to_top" "lang" $lang) }}</span>
+      </button>
+    </div>
+  </div>
+  <div class="reading-progress"></div>
+</div>
+{{- end }}

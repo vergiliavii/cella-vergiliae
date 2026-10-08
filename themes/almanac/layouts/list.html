@@ -1,0 +1,65 @@
+{{ define "main" }}
+{{- /* The archive: every post, newest first, under the year it was
+       published in. A year's count is of the posts on this page; a site
+       that wants the whole archive on one page raises build.pageSize. */ -}}
+{{- $lang := .Site.Language -}}
+{{- $total := 0 -}}
+{{- with .Paginator }}{{ $total = .TotalItems }}{{ end -}}
+<div class="mx-auto max-w-3xl space-y-10">
+  {{- partial "page-header.html" (dict
+      "eyebrow" (partial "t.html" (dict "k" "archives" "lang" $lang))
+      "title" (partial "page-title.html" .)
+      "meta" (partial "t.html" (dict "k" "archives_meta" "lang" $lang "n" $total))) }}
+
+  <div class="space-y-10">
+    {{- $year := "" }}
+    {{- range .Pages }}
+      {{- $dated := not (time.IsZero .PublishDate) }}
+      {{- $y := "undated" }}
+      {{- if $dated }}{{ $y = time.Format "2006" .PublishDate }}{{ end }}
+      {{- if ne $y $year }}
+        {{- if $year }}
+      </ul>
+    </section>
+        {{- end }}
+        {{- $n := 0.0 }}
+        {{- range $.Pages }}
+          {{- $each := "undated" }}
+          {{- if not (time.IsZero .PublishDate) }}{{ $each = time.Format "2006" .PublishDate }}{{ end }}
+          {{- if eq $each $y }}{{ $n = math.Add $n 1 }}{{ end }}
+        {{- end }}
+    <section>
+      <div class="sticky top-14 z-10 -mx-2 mb-2 border-b border-border/70 bg-background/90 px-2 py-2.5 backdrop-blur-sm">
+        <div class="flex items-baseline gap-3">
+          <h2 class="font-mono text-xl font-bold tabular-nums tracking-tight" id="y{{ $y }}">{{ if $dated }}{{ $y }}{{ else }}{{ partial "t.html" (dict "k" "undated" "lang" $lang) }}{{ end }}</h2>
+          <span class="eyebrow">{{ partial "t.html" (dict "k" "year_count" "lang" $lang "n" $n) }}</span>
+        </div>
+      </div>
+      <ul class="divide-y divide-border/60">
+        {{- $year = $y }}
+      {{- end }}
+        <li>
+          <a href="{{ .RelPermalink }}" class="group -mx-2 flex items-baseline gap-4 rounded-md px-2 py-2.5 transition-colors hover:bg-accent/50">
+            {{- if $dated }}
+            <time datetime="{{ time.Format "2006-01-02" .PublishDate }}" class="w-11 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">{{ time.Format "01-02" .PublishDate }}</time>
+            {{- else }}
+            <span class="w-11 shrink-0"></span>
+            {{- end }}
+            <span class="line-clamp-1 flex-1 text-[15px] leading-snug transition-colors group-hover:text-brand">{{ .Title }}</span>
+            {{- with .Terms "categories" }}
+            <span class="hidden shrink-0 font-mono text-[10px] text-muted-foreground/70 sm:inline">{{ (index . 0).Name }}</span>
+            {{- end }}
+          </a>
+        </li>
+    {{- else }}
+    <div class="empty-state">{{ partial "t.html" (dict "k" "empty_terms" "lang" $lang) }}</div>
+    {{- end }}
+    {{- if $year }}
+      </ul>
+    </section>
+    {{- end }}
+  </div>
+
+  {{- partial "pagination.html" . }}
+</div>
+{{ end }}

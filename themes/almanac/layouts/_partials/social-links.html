@@ -1,0 +1,99 @@
+{{- /* The site's social links, from the social setting and in its order. An
+       entry with no address but a QR code or an account opens a card with
+       them; it is a <details>, so it opens without a script.
+
+       dict: site
+             id       what sets this row's element ids apart on a page
+             variant  "ghost" (default), "outline", or "buttons" with a
+                      name beside each icon
+             popover  "down" (default) or "up", where a card opens
+             resume   a site path for a resume button at the end */ -}}
+{{- $lang := .site.Language -}}
+{{- $id := .id | default "social" -}}
+{{- $variant := .variant | default "ghost" -}}
+{{- $up := eq (printf "%v" .popover) "up" -}}
+{{- $presets := dict
+  "github" (dict "icon" "github" "label" "GitHub")
+  "x" (dict "icon" "x-brand" "label" "X")
+  "bilibili" (dict "icon" "bilibili" "label" (partial "t.html" (dict "k" "social_bilibili" "lang" $lang)))
+  "xiaohongshu" (dict "icon" "xiaohongshu" "label" (partial "t.html" (dict "k" "social_xiaohongshu" "lang" $lang)))
+  "wechat" (dict "icon" "wechat" "label" (partial "t.html" (dict "k" "social_wechat" "lang" $lang)))
+  "zhihu" (dict "icon" "zhihu" "label" (partial "t.html" (dict "k" "social_zhihu" "lang" $lang)))
+  "weibo" (dict "icon" "weibo" "label" (partial "t.html" (dict "k" "social_weibo" "lang" $lang)))
+  "douyin" (dict "icon" "tiktok" "label" (partial "t.html" (dict "k" "social_douyin" "lang" $lang)))
+  "douban" (dict "icon" "douban" "label" (partial "t.html" (dict "k" "social_douban" "lang" $lang)))
+  "juejin" (dict "icon" "juejin" "label" (partial "t.html" (dict "k" "social_juejin" "lang" $lang)))
+  "gitee" (dict "icon" "gitee" "label" "Gitee")
+  "csdn" (dict "icon" "csdn" "label" "CSDN")
+  "youtube" (dict "icon" "youtube" "label" "YouTube")
+  "tiktok" (dict "icon" "tiktok" "label" "TikTok")
+  "telegram" (dict "icon" "telegram" "label" "Telegram")
+  "mastodon" (dict "icon" "mastodon" "label" "Mastodon")
+  "bluesky" (dict "icon" "bluesky" "label" "Bluesky")
+  "instagram" (dict "icon" "instagram" "label" "Instagram")
+  "discord" (dict "icon" "discord" "label" "Discord")
+  "threads" (dict "icon" "threads" "label" "Threads")
+  "facebook" (dict "icon" "facebook" "label" "Facebook")
+  "reddit" (dict "icon" "reddit" "label" "Reddit")
+  "medium" (dict "icon" "medium" "label" "Medium")
+  "stackoverflow" (dict "icon" "stackoverflow" "label" "Stack Overflow")
+  "twitch" (dict "icon" "twitch" "label" "Twitch")
+  "steam" (dict "icon" "steam" "label" "Steam")
+  "mail" (dict "icon" "mail" "label" (partial "t.html" (dict "k" "social_mail" "lang" $lang)))
+  "rss" (dict "icon" "rss" "label" (partial "t.html" (dict "k" "social_rss" "lang" $lang)))
+-}}
+{{- $cls := "icon-btn" -}}
+{{- if eq $variant "outline" }}{{ $cls = "icon-btn border border-border bg-card hover:border-foreground/30" }}{{ end -}}
+{{- if eq $variant "buttons" }}{{ $cls = "btn btn-outline btn-sm" }}{{ end -}}
+{{- $iconCls := "size-4" -}}
+{{- if eq $variant "buttons" }}{{ $iconCls = "size-4 text-muted-foreground" }}{{ end -}}
+{{- /* A card that opens upwards, in the menu, hangs from the row rather than
+       its button: the menu cuts off what leaves it sideways. */ -}}
+<div class="{{ if $up }}relative {{ end }}flex flex-wrap items-center {{ if eq $variant "ghost" }}gap-1{{ else }}gap-2{{ end }}">
+  {{- range $i, $e := .site.ThemeSettings.social }}
+    {{- if not $e.hidden }}
+      {{- $icon := "external-link" }}
+      {{- $label := partial "t.html" (dict "k" "social_link" "lang" $lang) }}
+      {{- with index $presets (printf "%v" $e.platform) }}{{ $icon = .icon }}{{ $label = .label }}{{ end }}
+      {{- with $e.label }}{{ $label = . }}{{ end }}
+      {{- $url := "" }}
+      {{- with $e.url }}{{ $url = . }}{{ if str.HasPrefix "/" . }}{{ $url = url.Rel . }}{{ end }}{{ end }}
+      {{- $web := or (str.HasPrefix "http://" $url) (str.HasPrefix "https://" $url) }}
+      {{- if $url }}
+      <a href="{{ $url }}"{{ if $web }} target="_blank" rel="noopener"{{ end }} class="{{ $cls }}" aria-label="{{ $label }}" title="{{ $label }}">
+        {{- partial "social-icon.html" (dict "icon" $icon "image" $e.icon "class" $iconCls) }}
+        {{- if eq $variant "buttons" }}<span>{{ $label }}</span>{{ end -}}
+      </a>
+      {{- else if or $e.qr $e.account }}
+      <details class="social-pop {{ if $up }}static{{ else }}relative{{ end }}">
+        <summary class="{{ $cls }}" aria-label="{{ $label }}" title="{{ $label }}">
+          {{- partial "social-icon.html" (dict "icon" $icon "image" $e.icon "class" $iconCls) }}
+          {{- if eq $variant "buttons" }}<span>{{ $label }}</span>{{ end -}}
+        </summary>
+        <div class="card absolute left-0 z-30 w-52 space-y-2.5 p-3 shadow-xl shadow-black/10 {{ if $up }}bottom-full mb-3{{ else }}top-full mt-2{{ end }}">
+          {{- with $e.qr }}
+          <img src="{{ url.Rel . }}" alt="{{ partial "t.html" (dict "k" "social_qr" "lang" $lang) }}" width="200" height="200" loading="lazy"
+               class="aspect-square w-full rounded-md border border-border bg-white object-contain">
+          {{- end }}
+          {{- with $e.account }}
+          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/60 py-1 pl-2.5 pr-1">
+            <span id="{{ $id }}-account-{{ $i }}" class="min-w-0 truncate font-mono text-[12px]" title="{{ partial "t.html" (dict "k" "social_account" "lang" $lang) }}">{{ . }}</span>
+            <button type="button" data-copy-from="{{ $id }}-account-{{ $i }}" class="icon-btn copy-icon size-6 shrink-0"
+                    title="{{ partial "t.html" (dict "k" "copy" "lang" $lang) }}" aria-label="{{ partial "t.html" (dict "k" "copy" "lang" $lang) }}">
+              {{- partial "icon.html" (dict "name" "copy" "class" "size-3.5") -}}
+            </button>
+          </div>
+          {{- end }}
+          <p class="text-center text-[11px] leading-snug text-muted-foreground">{{ with $e.hint }}{{ . }}{{ else }}{{ partial "t.html" (dict "k" "social_scan" "lang" $lang) }}{{ end }}</p>
+        </div>
+      </details>
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- with .resume }}
+  <a href="{{ url.Rel . }}" class="btn btn-outline btn-sm">
+    {{- partial "icon.html" (dict "name" "id-card" "class" "size-4 text-muted-foreground") }}
+    <span>{{ partial "t.html" (dict "k" "resume" "lang" $lang) }}</span>
+  </a>
+  {{- end }}
+</div>

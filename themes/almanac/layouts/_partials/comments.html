@@ -1,0 +1,4 @@
+{{- /* Where the Comments plugin puts a thread. It stays empty, and so out of
+       sight, on a site without the plugin or a page that turned it off.
+       Called with the page's context. */ -}}
+<section class="comments" data-kite-comments data-title="{{ partial "t.html" (dict "k" "comments" "lang" .Site.Language) }}"></section>

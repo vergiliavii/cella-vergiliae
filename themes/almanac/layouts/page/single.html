@@ -1,0 +1,17 @@
+{{ define "main" }}
+{{- /* A page that is not a post: its title and its text. */ -}}
+{{- $p := .Page -}}
+{{ partial "toc.html" . }}
+<article class="mx-auto max-w-3xl">
+  <header class="mb-10 space-y-3 border-b border-border pb-8">
+    <h1 class="text-3xl font-bold leading-[1.15] tracking-tight md:text-4xl">{{ $p.Title }}</h1>
+    {{- with $p.Params.description }}
+    <p class="max-w-2xl font-serif text-base leading-relaxed text-muted-foreground md:text-lg">{{ . }}</p>
+    {{- end }}
+  </header>
+  <div class="prose-almanac">
+    {{ $p.Content }}
+  </div>
+  {{ partial "comments.html" . }}
+</article>
+{{ end }}

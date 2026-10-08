@@ -1,0 +1,21 @@
+{{- /* The standard card: a 4:3 cover on the left, the text on the right. A
+       minimum height rather than a fixed one keeps a two-line title whole.
+       dict: page, site */ -}}
+{{- $p := .page -}}
+<article class="card card-hover group overflow-hidden">
+  <a href="{{ $p.RelPermalink }}" class="flex min-h-36">
+    <div class="w-36 shrink-0 p-2.5 pr-0 sm:w-48">
+      <div class="aspect-[4/3] w-full">{{ partial "post-cover.html" . }}</div>
+    </div>
+    <div class="flex min-w-0 flex-1 flex-col justify-between p-4 sm:p-5">
+      <div class="min-w-0 space-y-1.5">
+        {{- partial "card-meta.html" (dict "page" $p "site" .site) }}
+        <h3 class="line-clamp-2 text-[15px] font-semibold leading-snug tracking-tight transition-colors group-hover:text-brand sm:text-base">{{ $p.Title }}</h3>
+        {{- with $p.Description }}
+        <p class="line-clamp-2 text-[12.5px] leading-relaxed text-muted-foreground sm:text-[13px]">{{ str.Truncate 100 . }}</p>
+        {{- end }}
+      </div>
+      {{- partial "card-tags.html" (dict "page" $p "limit" 4 "class" "mt-2.5") }}
+    </div>
+  </a>
+</article>

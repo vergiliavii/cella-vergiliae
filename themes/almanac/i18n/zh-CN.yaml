@@ -1,0 +1,228 @@
+# What Almanac says about itself in the studio, in Chinese. The keys follow
+# theme.yaml; anything missing here is shown as written there.
+theme:
+  title: 年鉴
+  description: 极简、内容向的个人站点主题。杂志风刊头下是一列卡片，另有项目、书影、动态、友链和简历页；白天是奶油色的纸，夜里是暖色的墨，除非你要求，不从第三方加载任何资源。
+
+  settings:
+    profile:
+      label: 个人资料
+    avatar:
+      label: 头像
+      help: 你的正方形照片，显示在首页、关于页、友链页和手机菜单里。留空时显示名字的首字母。
+    position:
+      label: 职业
+      placeholder: 后端工程师
+    location:
+      label: 所在地
+      placeholder: 杭州
+    status:
+      label: 状态
+      help: 名字旁边的绿色小标签，头像上也会多一个绿点。留空就都不显示。
+      placeholder: 在职
+    hero_title:
+      label: 首页标题
+      help: 留空时用站点作者的名字打招呼。
+    hero_text:
+      label: 简介
+      help: 标题下的一段话。留空时用站点描述。
+    motto:
+      label: 座右铭
+      help: 社交链接旁边带引号的一句话。
+    banner:
+      label: 横幅
+      help: 首页顶部的宽图。留空时画一层强调色的柔和渐变。
+    show_banner:
+      label: 显示横幅
+    show_issue:
+      label: 显示期号
+      help: 首页标题上方的「ISSUE — 2026.09」一行，取站点最近一次构建的月份。
+
+    brand:
+      label: 外观
+    accent:
+      label: 强调色
+      help: 链接、当前菜单、小标题和按钮用这个颜色。夜里主题会自动调亮。
+      options:
+        "#c96442": 赤陶
+        "#4f7a54": 苔绿
+        "#3d6fa8": 墨蓝
+        "#8a5a9e": 梅紫
+    color_scheme:
+      label: 白天或夜晚
+      help: 读者第一次看到的样子，之后仍可以用页头的按钮切换。
+      options:
+        auto: 跟随读者的系统
+        light: 白天
+        dark: 夜晚
+    web_fonts:
+      label: 加载网页字体
+      help: 从 Google Fonts 加载主题设计时用的 Inter、Source Serif 4 和 JetBrains Mono。关掉时用读者设备上已有的字体，不向第三方请求任何资源。
+    favicon:
+      label: 站点图标
+      help: 显示在浏览器标签页和书签里。留空时用主题自带的图标。
+    share_image:
+      label: 分享图
+      help: 页面被分享到聊天软件或社交网站时显示的图，页面自己有封面时用封面。建议用 1200×630 像素的 PNG 或 JPEG。留空时用头像。
+
+    navigation:
+      label: 导航
+    nav:
+      label: 页头链接
+      help: 站点的页头菜单还没有链接时显示这些。站内地址以斜杠开头；指向其他网站的链接在新标签页打开。图标只在手机菜单里显示，选「自动」时按地址猜一个。
+      fields:
+        label:
+          label: 名称
+          placeholder: 文章
+        url:
+          label: 地址
+        icon:
+          label: 图标
+          options:
+            auto: 自动
+            rocket: 火箭
+            file-text: 文章
+            folder: 文件夹
+            book-open: 书
+            film: 电影
+            archive: 归档
+            sparkles: 闪光
+            user: 人
+            id-card: 名片
+            hash: 井号
+            plane: 飞机
+            briefcase: 公文包
+            rss: 订阅
+            search: 搜索
+            external-link: 外链
+    show_github:
+      label: 页头的 GitHub 按钮
+      help: 社交链接里有 GitHub 时显示。
+    feed_page:
+      label: 订阅页
+      help: 用「订阅」模板画的页面地址，RSS 图标都指向这里。留空时直接指向订阅源。
+
+    community:
+      label: 社交
+    social:
+      label: 社交链接
+      help: 显示在首页、关于页和手机菜单里，按这里的顺序排列。没有地址、但有二维码或账号的一项会打开一张卡片，微信就是这样。
+      fields:
+        platform:
+          label: 平台
+          options:
+            bilibili: 哔哩哔哩
+            xiaohongshu: 小红书
+            wechat: 微信
+            zhihu: 知乎
+            weibo: 微博
+            douyin: 抖音
+            douban: 豆瓣
+            juejin: 掘金
+            mail: 邮箱
+            rss: 订阅
+            other: 其他
+        url:
+          label: 地址
+          help: "一个链接，或者 mailto: 加邮箱地址。"
+        label:
+          label: 名称
+          help: 留空时用平台自己的名字。
+        icon:
+          label: 图标
+          help: 主题不认识的平台用的单色 SVG，会跟着文字变色。
+        qr:
+          label: 二维码
+        account:
+          label: 账号
+          help: 显示在卡片里，旁边有复制按钮。
+        hint:
+          label: 说明
+          help: 二维码下面的一行字。留空时提示读者扫码。
+        hidden:
+          label: 隐藏
+
+    home:
+      label: 首页
+    home_count:
+      label: 首页文章数
+      help: 首页在「查看更多」前显示几篇最新文章，最多为站点的每页条数。
+    card_fallback:
+      label: 没有封面的文章
+      help: 文章没有封面、也没有指定卡片样式时，在首页里怎么画。
+      options:
+        compact: 只显示文字
+        tile: 用第一个标签画一块封面
+
+    posts:
+      label: 文章
+    show_reading_time:
+      label: 显示阅读时间
+    show_word_count:
+      label: 显示字数
+    show_updated:
+      label: 显示更新日期
+      help: 文章在发布之后的某一天更新过时显示。
+    show_toc:
+      label: 显示目录
+      help: 文章至少有两个小标题、屏幕又足够宽时，显示在正文旁边。
+    reading_bar:
+      label: 显示阅读条
+      help: 标题滚出屏幕后，页头下方出现一条显示标题和阅读进度的横条。
+
+    pages:
+      label: 特殊页面
+    github_user:
+      label: GitHub 用户
+      help: 用「项目」模板画的页面上，由读者的浏览器从 GitHub 取这个用户各仓库的星标、复刻、语言和最近推送时间。留空就不请求。
+    about_page:
+      label: 关于页
+      help: 首页标题和友链页指向的地址。
+    resume_page:
+      label: 简历页
+      help: 关于页的社交链接旁边会多一个简历按钮。留空就不显示。
+
+    footer:
+      label: 页脚
+    icp:
+      label: ICP 备案号
+      help: 在中国大陆托管的网站的备案号，会链接到备案查询网站。
+    copyright:
+      label: 版权
+      help: 留空时显示站点最近一次构建的年份和站点名称。
+    show_credit:
+      label: 注明 Kite 和 Almanac
+
+  menus:
+    main:
+      label: 页头
+      description: 页头里的链接，窄屏时在手机菜单里，链接的 icon 参数决定它在菜单里的图标。站点给这个菜单加上链接之前，显示「导航」里的页头链接。
+
+  layouts:
+    about:
+      label: 关于
+      description: 个人资料在上，正文在中间，社交链接在下面。
+    projects:
+      label: 项目
+      description: 页面 front matter 里的项目，按状态分组；设置了 GitHub 用户时显示实时的仓库数据。
+    project:
+      label: 项目详情
+      description: 一个项目自己的页面：状态、技术栈、GitHub 数据和链接在上，正文在下。
+    douban:
+      label: 书影
+      description: 页面 front matter 里的书和电影，分成两个书架。
+    moments:
+      label: 动态
+      description: 页面 front matter 里的短动态，按天分组，每条可以是几句话、几张图、一首歌或一段视频。
+    links:
+      label: 友链
+      description: 供别人复制的本站名片、申请友链的方式，以及页面 front matter 里分组的友链。
+    resume:
+      label: 简历
+      description: 写在页面 front matter 里的简历，按 A4 纸排好，可以直接打印。
+    feed:
+      label: 订阅
+      description: 订阅源的地址和一键复制按钮，外加几句关于阅读器的话。
+    search:
+      label: 搜索
+      description: 打开 Kite 搜索插件搜索框的页面。

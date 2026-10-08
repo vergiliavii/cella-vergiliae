@@ -1,0 +1,39 @@
+{{- /* The menu of a narrow screen, opened by the checkbox at the top of
+       <body> through the menu button in the header. */ -}}
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $author := .Site.Author | default .Site.Title -}}
+<label for="nav-toggle" class="drawer-backdrop print:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" aria-hidden="true"></label>
+<aside class="drawer print:hidden fixed inset-y-0 left-0 z-50 flex w-80 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-background shadow-2xl shadow-black/20"
+       aria-label="{{ partial "t.html" (dict "k" "nav" "lang" $lang) }}">
+  <div class="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
+    <span class="text-[15px] font-semibold tracking-tight">{{ .Site.Title }}</span>
+    <label for="nav-toggle" class="icon-btn -mr-1" title="{{ partial "t.html" (dict "k" "close" "lang" $lang) }}">
+      {{- partial "icon.html" "x" -}}
+    </label>
+  </div>
+
+  <div class="flex items-center gap-3 border-b border-border px-4 py-4">
+    {{- partial "avatar.html" (dict "site" .Site "size" "size-12") }}
+    <div class="min-w-0 flex-1">
+      <div class="truncate text-[15px] font-semibold">{{ $author }}</div>
+      {{- if or $s.position $s.location }}
+      <div class="truncate text-[12px] text-muted-foreground">
+        {{- with $s.position }}<span>{{ . }}</span>{{ end }}
+        {{- if and $s.position $s.location }}<span class="mx-1 opacity-40">·</span>{{ end }}
+        {{- with $s.location }}<span>{{ . }}</span>{{ end -}}
+      </div>
+      {{- end }}
+    </div>
+  </div>
+
+  <nav class="px-3 py-3">
+    <div class="eyebrow mb-2 px-2">{{ partial "t.html" (dict "k" "nav" "lang" $lang) }}</div>
+    {{- partial "nav-links.html" (dict "ctx" . "variant" "drawer") }}
+  </nav>
+
+  <div class="mt-auto space-y-3 border-t border-border px-4 py-4">
+    {{- partial "social-links.html" (dict "site" .Site "id" "drawer" "variant" "ghost" "popover" "up") }}
+    <div class="font-mono text-[11px] text-muted-foreground/70">© {{ time.Format "2006" .Site.BuildTime }} {{ .Site.Title }}</div>
+  </div>
+</aside>

@@ -1,0 +1,97 @@
+{{ define "main" }}
+{{- /* Moments: short entries from the page's front matter, newest first as
+       they are written, under the day they were posted. The text is shown
+       as written, with its line breaks.
+
+       moments:
+         - date: 2026-04-30T10:00:00+08:00
+           text: A line or two.
+           mood: coffee               # a word or an emoji
+           location: Hangzhou
+           device: iPhone 15 Pro      # the icon is picked from the name
+           images: [/images/moments/walk-1.jpg, /images/moments/walk-2.jpg]
+           music: {platform: "163", id: "1974443814", type: song}   # or spotify
+           video: {platform: bilibili, id: BV1uv411q7Mv}            # or youtube */ -}}
+{{- $lang := .Site.Language -}}
+{{- $moments := .Page.Params.moments -}}
+{{- $total := 0.0 -}}
+{{- range $moments }}{{ $total = math.Add $total 1 }}{{ end -}}
+<div class="mx-auto max-w-2xl space-y-8">
+  <header class="space-y-3 border-b border-border pb-6">
+    <div class="eyebrow eyebrow-brand flex items-center gap-2">
+      {{- partial "icon.html" (dict "name" "sparkles" "class" "size-3") }}
+      <span>{{ partial "t.html" (dict "k" "moments_label" "lang" $lang) }}</span>
+      <span class="opacity-40">·</span>
+      <span class="normal-case tracking-normal text-muted-foreground tabular-nums">{{ partial "t.html" (dict "k" "moments_meta" "lang" $lang "n" $total) }}</span>
+    </div>
+    <h1 class="text-2xl font-bold leading-[1.15] tracking-tight md:text-3xl">{{ .Page.Title }}</h1>
+    <p class="text-sm leading-relaxed text-muted-foreground">{{ with .Page.Params.description }}{{ . }}{{ else }}{{ partial "t.html" (dict "k" "moments_text" "lang" $lang) }}{{ end }}</p>
+    {{- with .Page.Content }}
+    <div class="prose-almanac prose-sm max-w-none">{{ . }}</div>
+    {{- end }}
+  </header>
+
+  {{- if not $moments }}
+  <div class="empty-state">{{ partial "t.html" (dict "k" "moments_empty" "lang" $lang) }}</div>
+  {{- else }}
+  <div class="space-y-8">
+    {{- $day := "" }}
+    {{- $opened := false }}
+    {{- range $i, $m := $moments }}
+      {{- $when := dict "day" "" "time" "" "week" "" "iso" "" }}
+      {{- with $m.date }}
+        {{- if eq (printf "%T" .) "time.Time" }}
+          {{- $when = dict "day" (time.Format "2006-01-02" .) "time" (time.Format "15:04" .) "week" (time.Format "Mon" .) "iso" (time.Format "2006-01-02T15:04:05Z07:00" .) }}
+        {{- else }}
+          {{- /* Kite hands a date inside a list over as text. It is read only
+                 in the shapes a length tells apart, since a date that fails
+                 to read would fail the build. */}}
+          {{- $d := str.Replace " " "T" (printf "%v" .) }}
+          {{- $clock := "" }}
+          {{- if str.Contains "T" $d }}{{ $clock = printf "%.5s" (index (str.Split "T" $d) 1) }}{{ end }}
+          {{- $layout := "" }}
+          {{- $n := len $d }}
+          {{- if or (eq $n 25) (and (eq $n 20) (str.HasSuffix "Z" $d)) }}{{ $layout = "2006-01-02T15:04:05Z07:00" }}
+          {{- else if eq $n 19 }}{{ $layout = "2006-01-02T15:04:05" }}
+          {{- else if eq $n 16 }}{{ $layout = "2006-01-02T15:04" }}
+          {{- else if eq $n 10 }}{{ $layout = "2006-01-02" }}{{ end }}
+          {{- $week := "" }}
+          {{- with $layout }}{{ $week = time.Format "Mon" (time.Parse . $d) }}{{ end }}
+          {{- $when = dict "day" (printf "%.10s" $d) "time" $clock "week" $week "iso" $d }}
+        {{- end }}
+      {{- end }}
+      {{- if or (not $opened) (ne $when.day $day) }}
+        {{- if $opened }}
+      </div>
+    </section>
+        {{- end }}
+        {{- $n := 0.0 }}
+        {{- range $moments }}
+          {{- $other := "" }}
+          {{- with .date }}{{ if eq (printf "%T" .) "time.Time" }}{{ $other = time.Format "2006-01-02" . }}{{ else }}{{ $other = printf "%.10s" (str.Replace " " "T" (printf "%v" .)) }}{{ end }}{{ end }}
+          {{- if eq $other $when.day }}{{ $n = math.Add $n 1 }}{{ end }}
+        {{- end }}
+    <section class="space-y-3">
+      <div class="sticky top-14 z-10 -mx-4 border-y border-border bg-background/85 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
+        <div class="flex items-baseline gap-3">
+          <h2 class="font-mono text-[13px] font-semibold tabular-nums">{{ $when.day }}</h2>
+          {{- with $when.week }}<span class="eyebrow">{{ . }}</span>{{ end }}
+          <span class="ml-auto font-mono text-[10px] tabular-nums text-muted-foreground/60">{{ $n }}</span>
+        </div>
+      </div>
+      <div class="space-y-3">
+        {{- $day = $when.day }}
+        {{- $opened = true }}
+      {{- end }}
+        {{ partial "moment-card.html" (dict "moment" $m "when" $when "index" $i "site" $.Site) }}
+    {{- end }}
+    {{- if $opened }}
+      </div>
+    </section>
+    {{- end }}
+  </div>
+  {{- end }}
+
+  {{ partial "comments.html" . }}
+</div>
+{{ end }}

@@ -1,0 +1,20 @@
+{{ define "main" }}
+{{- $lang := .Site.Language -}}
+<div class="mx-auto max-w-md space-y-5 py-16 text-center">
+  <div class="font-mono text-6xl font-bold tracking-tight text-muted-foreground/30">404</div>
+  <h1 class="text-2xl font-semibold tracking-tight">{{ partial "t.html" (dict "k" "not_found" "lang" $lang) }}</h1>
+  <p class="font-serif text-muted-foreground">{{ partial "t.html" (dict "k" "not_found_text" "lang" $lang) }}</p>
+  <div class="flex flex-wrap justify-center gap-2 pt-2">
+    <a href="{{ url.For "home" }}" class="btn btn-primary">
+      {{ partial "t.html" (dict "k" "back_home" "lang" $lang) }}
+      {{- partial "icon.html" (dict "name" "arrow-right" "class" "size-3.5") }}
+    </a>
+    <span class="search-slot">
+      <button type="button" data-kite-search class="btn btn-outline">
+        {{- partial "icon.html" (dict "name" "search" "class" "size-3.5") }}
+        {{ partial "t.html" (dict "k" "search" "lang" $lang) }}
+      </button>
+    </span>
+  </div>
+</div>
+{{ end }}

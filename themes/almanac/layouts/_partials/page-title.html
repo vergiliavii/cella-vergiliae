@@ -1,0 +1,13 @@
+{{- /* What a page calls itself. Kite names its listings in English, so the
+       ones the theme knows are renamed in the site's language. Called with
+       the page's context. */ -}}
+{{- $lang := .Site.Language -}}
+{{- $kind := printf "%s" .Page.Kind -}}
+{{- if eq $kind "404" }}{{ partial "t.html" (dict "k" "not_found" "lang" $lang) }}
+{{- else if eq $kind "home" }}{{ .Site.Title }}
+{{- else if and (eq $kind "list") (eq .Page.Type "post") }}{{ partial "t.html" (dict "k" "posts" "lang" $lang) }}
+{{- else if and (eq $kind "list") (eq .Page.Type "page") }}{{ partial "t.html" (dict "k" "pages" "lang" $lang) }}
+{{- else if and (eq $kind "taxonomy") (eq .Page.Type "tags") }}{{ partial "t.html" (dict "k" "tags" "lang" $lang) }}
+{{- else if and (eq $kind "taxonomy") (eq .Page.Type "categories") }}{{ partial "t.html" (dict "k" "categories" "lang" $lang) }}
+{{- else if and (eq $kind "term") (eq .Page.Type "tags") }}#{{ .Page.Title }}
+{{- else }}{{ .Page.Title }}{{ end -}}

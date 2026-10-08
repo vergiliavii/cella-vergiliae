@@ -1,0 +1,50 @@
+{{- $s := .Site.ThemeSettings -}}
+{{- $lang := .Site.Language -}}
+{{- $mode := "auto" -}}
+{{- with $s.color_scheme }}{{ if or (eq . "light") (eq . "dark") }}{{ $mode = . }}{{ end }}{{ end -}}
+<!DOCTYPE html>
+<html lang="{{ $lang }}" data-mode="{{ $mode }}"{{ if ne $mode "auto" }} data-theme="{{ $mode }}"{{ end }}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{ partial "meta.html" . }}
+  {{ partial "theme-init.html" . }}
+  <link rel="stylesheet" href="{{ url.Rel "almanac/almanac.css" }}">
+  {{- /* The accent a site chooses, and a lighter one for the night, unless it
+         is the terracotta the palette was drawn with. */}}
+  {{- with $s.accent }}{{ if ne (str.Lower .) "#c96442" }}
+  <style>:root { --accent-color: {{ . }}; --accent-color-night: color-mix(in oklab, {{ . }} 78%, white); }</style>
+  {{- end }}{{ end }}
+  {{- if $s.web_fonts }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+  {{- end }}
+  <script src="{{ url.Rel "almanac/almanac.js" }}" defer></script>
+  {{ block "head" . }}{{ end }}
+  {{ .Site.HeadHTML }}
+</head>
+<body class="min-h-screen flex flex-col bg-background text-foreground antialiased"
+  data-copy="{{ partial "t.html" (dict "k" "copy" "lang" $lang) }}"
+  data-copied="{{ partial "t.html" (dict "k" "copied" "lang" $lang) }}"
+  data-anchor="{{ partial "t.html" (dict "k" "anchor" "lang" $lang) }}"
+  data-close="{{ partial "t.html" (dict "k" "close" "lang" $lang) }}"
+  data-image-prev="{{ partial "t.html" (dict "k" "image_prev" "lang" $lang) }}"
+  data-image-next="{{ partial "t.html" (dict "k" "image_next" "lang" $lang) }}">
+  <a href="#main" class="skip-link">{{ partial "t.html" (dict "k" "skip" "lang" $lang) }}</a>
+  {{- /* Opens the menu of a narrow screen without a script. It comes before
+         everything it opens, as the stylesheet needs. */}}
+  <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="{{ partial "t.html" (dict "k" "menu_open" "lang" $lang) }}">
+  {{ partial "header.html" . }}
+
+  <div class="flex-1 mx-auto w-full max-w-4xl px-4 md:px-6 lg:px-8">
+    <main id="main" class="py-8 md:py-12">
+      {{ block "main" . }}{{ end }}
+    </main>
+  </div>
+
+  {{ partial "footer.html" . }}
+  {{ partial "drawer.html" . }}
+  {{ .Site.FooterHTML }}
+</body>
+</html>

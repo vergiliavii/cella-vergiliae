@@ -1,0 +1,25 @@
+{{- /* One post in a feed, drawn as the card its front matter asks for with
+       cardSize: feature, standard, right, compact or note. A post that asks
+       for none is standard with a picture and compact without, or standard
+       with a tile of its first tag when the site says so. Its picture is its
+       cover, or the first picture of its text when it names none; cover:
+       false asks for no picture at all, as post-cover.html draws it.
+       dict: page, site */ -}}
+{{- $p := .page -}}
+{{- $pictured := false -}}
+{{- $cover := $p.Params.cover -}}
+{{- if eq (printf "%v" $cover) "false" }}
+{{- else if $cover }}{{ $pictured = true }}
+{{- else if $p.Images }}{{ $pictured = true }}{{ end -}}
+{{- $size := "" -}}
+{{- with $p.Params.cardSize }}{{ $size = printf "%v" . }}{{ end -}}
+{{- if not $size -}}
+  {{- if $pictured }}{{ $size = "standard" }}
+  {{- else if eq .site.ThemeSettings.card_fallback "tile" }}{{ $size = "standard" }}
+  {{- else }}{{ $size = "compact" }}{{ end -}}
+{{- end -}}
+{{- if eq $size "feature" }}{{ partial "card-feature.html" . }}
+{{- else if eq $size "right" }}{{ partial "card-right.html" . }}
+{{- else if eq $size "compact" }}{{ partial "card-compact.html" . }}
+{{- else if eq $size "note" }}{{ partial "card-note.html" . }}
+{{- else }}{{ partial "card-post.html" . }}{{ end -}}
