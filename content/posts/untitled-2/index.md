@@ -6,6 +6,7 @@ status: draft
 created_at: 2026-10-08T07:40:28Z
 categories:
   - 随笔
+  - 诗歌
 description: 他们说，总归要有首歌。
 ---
 
