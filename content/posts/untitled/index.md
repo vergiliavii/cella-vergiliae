@@ -2,7 +2,7 @@
 id: 01M4D6VR5V93QTMDY2F6JK9RC9
 title: "论不器者的完成"
 slug: untitled
-status: draft
+status: published
 created_at: 2026-10-08T07:32:51Z
 description: 将整个世界融于自心中的人是伟大的。
 categories:
@@ -10,6 +10,7 @@ categories:
   - 散文
 tags:
   - 阿尔图罗
+published_at: 2026-10-08T16:19:04.782Z
 ---
 
 许多人活着，只是在为自身寻找一个模板而已。
