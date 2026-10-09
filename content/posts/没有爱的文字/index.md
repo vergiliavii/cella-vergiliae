@@ -2,12 +2,13 @@
 id: 01M4GDYRXA86EMD1FNY016PRQD
 title: 没有爱的文字
 slug: 没有爱的文字
-status: draft
+status: published
 created_at: 2026-10-09T13:34:33Z
 description: 莫要误入长不出生命的地方。
 categories:
   - 随笔
   - 散文
+published_at: 2026-10-09T14:22:31Z
 ---
 
 没有爱的文字是一眼便能看出来的。
