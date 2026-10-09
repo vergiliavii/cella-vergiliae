@@ -45,3 +45,8 @@ plugins:
   enabled:
     - comments
     - search
+  settings:
+    comments:
+      category_id: DIC_kwDOVBOijM4DHYUD
+      repo: vergiliavii/cella-vergiliae
+      repo_id: R_kgDOVBOijA
