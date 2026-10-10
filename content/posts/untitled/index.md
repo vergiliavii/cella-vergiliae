@@ -10,7 +10,7 @@ categories:
   - 散文
 tags:
   - 阿尔图罗
-published_at: 2026-10-08T16:19:04Z
+published_at: 2026-10-08T10:00:00Z
 ---
 
 许多人活着，只是在为自身寻找一个模板而已。
