@@ -8,7 +8,7 @@ categories:
   - 随笔
   - 诗歌
 description: 他们说，总归要有首歌。
-published_at: 2026-10-08T16:22:01Z
+published_at: 2026-10-08T12:00:00Z
 ---
 
 [原作2026.9.6]
