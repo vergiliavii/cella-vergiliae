@@ -1,7 +1,7 @@
 ---
 id: 01M53VDH7Q7D367E12QH65YJAQ
 title: "所谓“可爱”"
-slug: 所谓“可爱”
+slug: 所谓可爱
 status: published
 created_at: 2026-10-17T02:35:22Z
 published_at: 2026-10-23T02:26:45Z
