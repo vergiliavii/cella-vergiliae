@@ -5,7 +5,10 @@ slug: 有死之愿的绅士
 status: published
 created_at: 2026-10-24T07:35:08Z
 description: 无法形容这种美丽。
-published_at: 2026-10-24T07:39:22.738Z
+published_at: 2026-10-24T07:39:22Z
+categories:
+  - 随笔
+  - 散文
 ---
 
 “每当理查•考瑞去市中心，
